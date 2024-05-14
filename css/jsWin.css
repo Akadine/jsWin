@@ -1,0 +1,129 @@
+/* =============================================================================
+   jsWin styles
+   Author: Jon Crawford
+   ========================================================================== */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.rounded-corners {
+    border-radius: var(--border-radius, 10px);
+    -moz-border-radius: var(--border-radius, 10px);
+    -webkit-border-radius: var(--border-radius, 10px);
+}
+
+/* =============================================================================
+   resize handles
+   ========================================================================== */
+
+.handle-n, .handle-s {
+    cursor: ns-resize; /* Vertical resize cursor */
+}
+
+.handle-e, .handle-w {
+    cursor: ew-resize; /* Horizontal resize cursor */
+}
+
+.handle-ne, .handle-sw {
+    cursor: nesw-resize; /* Diagonal resize cursor */
+}
+
+.handle-nw, .handle-se {
+    cursor: nwse-resize; /* Diagonal resize cursor */
+}
+
+.handle-grabbing {
+	cursor: grabbing;
+}
+
+.handle-pointer {
+	cursor: pointer;
+}
+/* =============================================================================
+   blue theme
+   ========================================================================== */
+.blue-window{ position: absolute; border: 1px solid #0099ff; overflow: hidden; display: block; }	 
+.blue-title-bar { padding: 4px 10px 2px 10px; overflow: hidden; font-weight: bold; background-image: url("gradients/bg-gradient-blue.gif"); background-size: 2px 28px; background-repeat: repeat-x; }
+.blue-title-bar button { height: 14px; width: 14px; padding: 0; font-size: 10px; font-weight: bold; text-align: center; background-color: lightblue; }
+.blue-pane-body{ overflow-y: auto; overflow-x: hidden; background-color: lightblue; padding: 6px 4px 6px 6px; }
+.blue-tray { background-color: #88ccee; border: 1px solid #0099ff; height: 50px; margin: 0; padding: 2px; overflow: hidden; display: flex; align-items: center; justify-content: flex-start; }
+.blue-tray-bar { padding:2px; overflow: hidden; font-weight: bold; background-image: url("gradients/bg-gradient-blue.gif"); background-size: 2px 25px;	background-repeat: repeat-x; border: 1px solid #0099ff; position: relative; display: block; }
+.blue-start-menu { height: 44px; width: 60px; border: 1px solid #0099ff; position: relative; overflow: hidden;	border-radius: 6px 6px 6px 6px; font-weight: bold; background-image: url("gradients/bg-gradient-blue.gif"); background-size:2px 42px; background-repeat: repeat-x; }
+.blue-admin-button { height: 78px; width: 78px; overflow: hidden; top: 10px; left: 10px; border-radius: 6px 6px 6px 6px; font-weight: bold; background-image: url("gradients/bg-gradient-blue.gif"); background-size:2px 78px; background-repeat: repeat-x; z-index: 1000; position: absolute; border: 1px solid #0099ff; } 
+.blue-fieldset { font-family: sans-serif; border: 5px solid #0099ff; background-color: #88ccee; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; box-shadow: 5px 5px 5px #101010; -webkitbox-shadow: 5px 5px 5px #101010; padding: 4px; display: inline-block; }
+.blue-fieldset legend { background-color: #88ccee; color: #fff; padding: 5px 10px ; border: 5px solid #0099ff; font-size: 28px; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; box-shadow: 5px 5px 5px #101010; -webkitbox-shadow: 5px 5px 5px #101010; }
+.blue-fieldset .spacer { background: #0099ff; height: 5px; border-width: 4px 0 4px 0; border-style: solid; border-color: #88ccee; padding: 0; }
+.blue-profile { width: 300px; padding: 5px; table-layout: fixed; background-color: #88ccee; }
+.blue-profile td { height: 24px; }
+.blue-profile button { width: 50px; }
+.blue-profile tr .firstcell { overflow: hidden; width: 33%; }
+.blue-profile tr .secondcell { width: 47%; overflow: hidden; }
+.blue-profile tr .lastcell { width: 20%; }
+.blue-menu-bar { background-color: #88ccee; height: 28px; width: calc(100% + 11px); overflow:visible; padding: 3px; border: 1px solid #0099ff; position: relative; top: -6px; left: -6px; margin: 0; }
+.blue-mobile-menu-button { width: 20px; height: 20px; color: transparent; border-width: 4px 1px !important; padding: 4px 0; background-clip: content-box; background-color: #0099ff !important; }
+.blue-menu-bar li{ display:inline; }
+.blue-menu-bar button { text-align: left; background-color: #66afe9; border: 1px solid #0099ff; }
+.blue-drop-menu { position: absolute; display: none; border: 1px solid #0099ff; list-style-type: none; margin: 0; padding: 0; }
+.blue-drop-menu button { text-align: left; background-color: #66afe9; border: 1px solid #0099ff; }
+.blue-selected { background-image: url("gradients/bg-gradient-blue.gif"); background-size: 2px 20px; background-repeat: repeat-x; border-color: royalblue !important }
+.blue-page { overflow-y: auto; overflow-x: hidden; background-color: lightblue; }
+/* =============================================================================
+   light theme
+   ========================================================================== */
+.light-window{ position: absolute; border: 1px solid black; overflow: hidden; display: none; }	 
+.light-title-bar { padding: 4px 10px 2px 10px;	overflow: hidden; font-weight: bold; background-color: #aaaaaa; }
+.light-title-bar button { height: 14px; width: 14px; padding: 0; font-size: 10px; font-weight: bold; text-align: center; }
+.light-pane-body{ overflow-y: auto; overflow-x: hidden; background-color: white; padding: 6px 4px 6px 6px; }
+.light-tray { background-color: #aaaaaa; border: 1px solid black; height: 50px; margin: 0; padding: 2px; overflow: hidden; display: flex; align-items: center; justify-content: flex-start; }
+.light-tray-bar { padding:2px; overflow: hidden; font-weight: bold; background-color: #cccccc; border: 1px solid black;	display: none; }
+.light-start-menu { height: 44px; width: 60px; position: relative; overflow: hidden; border-radius: 6px 6px 6px 6px; font-weight: bold;	background-color: #aaaaaa; }
+.light-admin-button { height: 78px; width: 78px; overflow: hidden; top: 10px; left: 10px; border-radius: 6px 6px 6px 6px; font-weight: bold; background-color: #cccccc; z-index: 1000; position: absolute; }
+.light-fieldset { font-family: sans-serif; border: 5px solid wheat; background-color: #aaaaaa; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; box-shadow: 5px 5px 5px #101010; -webkitbox-shadow: 5px 5px 5px #101010; padding: 4px; display: inline-block; }
+.light-fieldset legend { background-color: #aaaaaa; color: #fff; padding: 5px 10px; border: 5px solid wheat; font-size: 28px; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; box-shadow: 5px 5px 5px #101010; -webkitbox-shadow: 5px 5px 5px #101010; }
+.light-fieldset .spacer { background-color: wheat; height: 5px; border-width: 4px 0 4px 0; border-style: solid; border-color: #aaaaaa; padding: 0; }
+.light-profile { width: 300px; padding: 5px; table-layout: fixed; background-color: #aaaaaa; }
+.light-profile td { height: 24px; }
+.light-profile button { width: 50px; }
+.light-profile tr .firstcell { overflow: hidden; width: 33%; }
+.light-profile tr .secondcell { width: 47%; overflow: hidden; }
+.light-profile tr .lastcell { width: 20%; }
+.light-menu-bar { background-color: #cccccc; height: 34px; width: calc(100% + 11px); padding: 3px; overflow:visible; border: 1px solid wheat; position: relative; top: -6px; left: -6px; margin: 0; }
+.light-mobile-menu-button { width: 20px; height: 20px; color: transparent; border-width: 4px 0 !important; padding: 4px 0; background-clip: content-box; background-color: slategrey !important; border-color: slategrey !important; }
+.light-menu-bar li{ display:inline; }
+.light-menu-bar button { text-align: left; border: 1px solid wheat; background-color: #ccc; }
+.light-drop-menu { background-color: #ccc; position: absolute; display: none; border: 1px solid wheat; list-style-type: none; margin: 0; padding: 0; }
+.light-drop-menu button { text-align: left; background-color: #ccc; border: 1px solid wheat }
+.light-selected { background-color: wheat !important; border-color: wheat !important; }
+.light-page { overflow-y: auto; overflow-x: hidden; background-color: white; }
+
+
+
+
+.-window{ position: absolute; border: 1px solid black; overflow: hidden; display: none; }	 
+.-title-bar { padding: 4px 10px 2px 10px;	overflow: hidden; font-weight: bold; background-color: #aaaaaa; }
+.-title-bar button { height: 14px; width: 14px; padding: 0; font-size: 10px; font-weight: bold; text-align: center; }
+.-pane-body{ overflow-y: auto; overflow-x: hidden; background-color: white; padding: 6px 4px 6px 6px; }
+.-tray { background-color: #aaaaaa; display: none; border: 1px solid black; height: 38px; margin: 0; padding: 2px; overflow: hidden; display: flex; align-items: center; justify-content: flex-start; }
+.-tray-bar { padding:2px; overflow: hidden; font-weight: bold; background-color: #cccccc; border: 1px solid black;	display: none; }
+.-start-menu { height: 42px; width: 60px; position: relative; overflow: hidden; border-radius: 6px 6px 6px 6px; font-weight: bold;	background-color: #aaaaaa; }
+.-admin-button { height: 78px; width: 78px; overflow: hidden; top: 10px; left: 10px; border-radius: 6px 6px 6px 6px; font-weight: bold; background-color: #cccccc; z-index: 1000; position: absolute; }
+.-fieldset { font-family: sans-serif; border: 5px solid wheat; background-color: #aaaaaa; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; box-shadow: 5px 5px 5px #101010; -webkitbox-shadow: 5px 5px 5px #101010; padding: 4px; display: inline-block; }
+.-fieldset legend { background-color: #aaaaaa; color: #fff; padding: 5px 10px; border: 5px solid wheat; font-size: 28px; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; box-shadow: 5px 5px 5px #101010; -webkitbox-shadow: 5px 5px 5px #101010; }
+.-fieldset .spacer { background-color: wheat; height: 5px; border-width: 4px 0 4px 0; border-style: solid; border-color: #aaaaaa; padding: 0; }
+.-profile { width: 300px; padding: 5px; table-layout: fixed; background-color: #aaaaaa; }
+.-profile td { height: 24px; }
+.-profile button { width: 50px; }
+.-profile tr .firstcell { overflow: hidden; width: 33%; }
+.-profile tr .secondcell { width: 47%; overflow: hidden; }
+.-profile tr .lastcell { width: 20%; }
+.-menu-bar { background-color: #cccccc; height: 28px; width: calc(100% + 11px); padding: 3px; overflow:visible; border: 1px solid wheat; position: relative; top: -6px; left: -6px; margin: 0; }
+.-mobile-menu-button { width: 20px; height: 20px; color: transparent; border-width: 4px 1px !important; padding: 4px 0; background-clip: content-box; background-color: black !important; }
+.-menu-bar li{ display:inline; }
+.-menu-bar button { text-align: left; border: 1px solid black; background-color: #ccc; }
+.-drop-menu { background-color: #ccc; position: absolute; display: none; border: 1px solid wheat; list-style-type: none; margin: 0; padding: 0; }
+.-drop-menu button { text-align: left; background-color: #ccc; border: 1px solid darkorange }
+.-selected { background-color: wheat !important; border-color: wheat !important; }
+.-page { overflow-y: auto; overflow-x: hidden; background-color: white; }
