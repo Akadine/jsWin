@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title></title>
+        <!-- Bootstrap CSS-->
+		<link href="css/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" >
+		<!-- We only need the css, uncomment if you are using Bootstrap and jQuery 
+        <script src="css/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+        -->
+        <link rel="stylesheet" type="text/css" href="css/normalize.css">
+        <link rel="stylesheet" type="text/css" href="css/media.css">
+        <link rel="stylesheet" type="text/css" href="css/jsWin.css"/>
+        
+        <script src="scripts/jsWin.js"></script>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div id="app"></div>
+        <script>
+            let options = {
+                themePrefix: 'blue', 
+                taskbar: true,
+                data: {msg: 'Hello World'},
+                taskbarItems: ['custom','trays','custom','details'],
+                customTaskbarItems: [
+                    {name: 'Start', click: 'system.startMenu();' },
+                    {name: 'myName', content: "<span jsw-bind='msg'></span>"}
+                ],
+                startMenuItems: [{name: "Say Hi", click: "system.dialogBox('Hello World')"}],
+            };
+            //wm = appID:
+            let wm = new jsWin('app', options, function(system){ //you can name system anything, but the windowManager is called system internally
+                //set up the app here, check for login cookie, auto login, show start window, etc. you have access to all the options and system functions.
+                system.options.background = "images/defaultbk.jpg"; //testing reactivity, could have sent this in options initially.
+                let version = system.version(); //gets and logs the jsWin version
+                //system.options.data.msg = "test";
+            });
+            
+        </script>
+    </body>
+</html>
