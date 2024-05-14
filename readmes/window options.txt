@@ -1,0 +1,143 @@
+1. "id": *Required*
+    - Description: Specifies the unique identifier of the window model. IDs below 500 are reserved for the system.
+    - Default: undefined
+
+2. "title": *Required*
+   - Description: Specifies the title of the window.
+   - Default: "" (empty string)
+
+3. "content": *Required*
+   - Description: Specifies the content to be displayed within the window.
+   - Default: "" (empty string)
+
+4. "height":
+   - Description: Specifies the height of the window in pixels. If unset, the minimum system value will be set.
+   - Default: minimum
+
+5. "width":
+   - Description: Specifies the width of the window in pixels.  If unset, the minimum system value will be set.
+   - Default: minimum
+
+6. "top": 
+   - Description: Specifies the top position of the window in pixels. If set, the window will be positioned from the top of the screen. If both top and bottom are set, bottom takes precedence.
+   - Default: undefined
+
+7. "left":
+   - Description: Specifies the left position of the window in pixels. If set, the window will be positioned from the left of the screen. If niether left and right are set, window will be centered horizontally.
+   - Default: undefined
+
+8. "bottom":
+   - Description: Specifies the bottom position of the window in pixels. If set, the window will be positioned from the bottom of the screen. If neither top and bottom are set, window will be centered vertically.
+   - Default: undefined
+
+9. "right":
+   - Description: Specifies the right position of the window in pixels. If set, the window will be positioned from the right of the screen. If both left and right are set, right takes precedence.
+   - Default: undefined
+
+10. "showMinimize":
+   - Description: Specifies whether the window should have a minimize button.
+   - Default: true
+
+11. "showMaximize":
+   - Description: Specifies whether the window should have a maximize button.
+   - Default: true
+
+12. "showExit":
+   - Description: Specifies whether the window should have an exit or close button.
+   - Default: true
+
+13. "showTitlebar":
+    - Description: Specifies whether the window should have a title bar. If set to false, the window will not have a title bar.
+    - Default: true
+
+14. "showTray":
+    - Description: Specifies whether to show a tray button in the task bar for the window. Be sure you have a way to close the window if set to false!
+    - Default: true
+
+15. "showBorder":
+    - Description: Specifies whether to show a border around the window.
+    - Default: true
+
+16. "roundCorners":
+    - Description: Specifies whether the window should have rounded corners.
+    - Default: false
+
+17. "transparent":
+    - Description: Specifies whether the window should have a transparent background. use this with titlebar=false and noBorder = true to customize your window completely. 
+    - Default: false
+
+18. "drag":
+   - Description: Specifies whether the window can be dragged by the user.
+   - Default: true
+
+19. "resize":
+    - Description: Specifies whether the window can be resized by the user.
+    - Default: true
+
+20. "oneInstance":
+    - Description: Specifies whether only one instance of the window can be opened. If set to true, attempting to open another instance will be prevented.
+    - Default: false
+
+21. "isModal":
+    - Description: Specifies whether the window should be modal. If set to true, the window will block interactions with other windows until closed.
+    - Default: false
+
+22. "canBookmark":
+    - Description: Will add search parameters so user can bookmark come back to the app.
+    - Default: false
+	
+23. "mustLogin":
+    - Description: Specifies whether the user must login to see the app they have bookmarked. You must implement this functionality, this is just a parameter for you to use.
+    - Default: false
+
+24. "startMaximized":
+    - Description: Will start the window maximized.
+    - Default: false
+
+25. "requireJS":
+    - Description: Specifies JavaScript files required for the window. This option enables developers to include specific JavaScript files that are essential for the functionality or presentation of the window.
+    - Default: undefined
+
+26. "reqData":
+    - Description: Specifies whether the window needs data from the database. This option allows developers to define the type of data required for the window's content.
+    - Default: undefined
+
+27. "onLoad":
+    - Description: Specifies a callback function to be executed when the window is loaded. Developers can define custom logic to be performed when the window is opened.
+    - Default: undefined
+
+28. "onExit":
+    - Description: Specifies a callback function to be executed when the window is closed or exited. Developers can define custom logic or cleanup tasks to be performed when the window is closed or exited.
+    - Default: undefined
+
+29. "onMaximize":
+    - Description: Specifies a callback function to be executed when the window is maximized. Developers can define custom logic to be performed when the window is maximized.
+    - Default: undefined
+
+30. "onMinimize":
+    - Description: Specifies a callback function to be executed when the window is minimized. Developers can define custom logic to be performed when the window is minimized.
+    - Default: undefined
+
+31. "onRestore":
+    - Description: Specifies a callback function to be executed when the window is restored from a maximized or minimized state. Developers can define custom logic to be performed when the window is restored.
+    - Default: undefined
+
+32. "onDrag":
+    - Description: Specifies a callback function to be executed when the window is dragged. Developers can define custom logic to be performed when the window is dragged.
+    - Default: undefined
+	
+33. "onResize":
+    - Description: Specifies a callback function to be executed when the window is resized. Developers can define custom logic to be performed when the window is resized.
+    - Default: undefined
+
+34. "onMutiple":
+	- Description: Specifies a callback function to be executed when a multiple window is opened, works with oneInstance. Developers can define custom logic to be performed when a second window is opened.
+	- Default: undefined
+	
+34. "onFocus":
+	- Description: Specifies a callback function to be executed when the window gains focus.
+	- Default: undefined
+
+34. "loseFocus":
+	- Description: Specifies a callback function to be executed when the window loses focus.
+	- Default: undefined
