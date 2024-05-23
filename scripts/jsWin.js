@@ -209,7 +209,7 @@
 /***********/
 /* jsWinUI */
 /***********/
-var jsWinUI = (function(){
+const jsWinUI = (function(){
 	/**
 	 * @brief this function initializes the Resizable object
 	 * @param _options {object} a dictionary of options. { element: DOMElement } required, the element to be resized
@@ -230,7 +230,7 @@ var jsWinUI = (function(){
 		
 		// Validate uiBounds
 		if (this.options.uiBounds !== undefined) {
-			let tempRect = new jsWinUI.rectangle(this.options.uiBounds);
+			const tempRect = new jsWinUI.rectangle(this.options.uiBounds);
 			this.options.uiBounds = tempRect.good ? tempRect : undefined;
 			if (!tempRect.good) { console.error("Resizable: [WARNING] 'uiBounds' option was malformed for " + this.option.element.getAttribute("id") );}
 		}
@@ -251,7 +251,7 @@ var jsWinUI = (function(){
 	 */
 	resizable.prototype.initHandles = function() {
 		// Create handles
-        let handleNames = this.options.handles.split(',').map(handle => handle.trim()); // Trim each handle name
+        const handleNames = this.options.handles.split(',').map(handle => handle.trim()); // Trim each handle name
 		
 		document.addEventListener("mousemove", event => {
 			this.repositionHandles();
@@ -260,7 +260,7 @@ var jsWinUI = (function(){
 		//set up the handles
         handleNames.forEach(handleName => {
 			//create the handle
-			let handle = document.createElement("div");
+			const handle = document.createElement("div");
 			handle.style.position = "absolute";
 			handle.id = handleName;
             document.body.appendChild(handle);
@@ -366,10 +366,10 @@ var jsWinUI = (function(){
 	 */
 	resizable.prototype.placeHandle = function(handle, handleName) {
 		//the rectangle of the element to be resized
-		let elementRect = this.options.element.getBoundingClientRect();
+		const elementRect = this.options.element.getBoundingClientRect();
 		
 		//we want the corner handles to be usable, side handle length is our element's side length minus 2 corner handles
-		let buffer = this.options.size + this.options.size;
+		const buffer = this.options.size + this.options.size;
  
 		switch (handleName) {
 			case "n": //the top side
@@ -471,13 +471,13 @@ var jsWinUI = (function(){
 	 */
 	resizable.prototype.resizeElement = function(event, handleName) {
 		//the the deltas
-		let dx = event.clientX - this.initialPos.x;
-		let dy = event.clientY - this.initialPos.y;
+		const dx = event.clientX - this.initialPos.x;
+		const dy = event.clientY - this.initialPos.y;
 		
 		//get the current size
-		let tempRect = this.options.element.getBoundingClientRect();	
+		const tempRect = this.options.element.getBoundingClientRect();	
 		
-		let elementRect = new jsWinUI.rectangle({
+		const elementRect = new jsWinUI.rectangle({
 			top: tempRect.top ,
 			left: tempRect.left,
 			bottom: tempRect.bottom,
@@ -485,11 +485,10 @@ var jsWinUI = (function(){
 		});
 		
 		// only resize if handle matches the side
+        let canResize = true;
 		if (handleName === "n" || handleName[0] === "n") { //top border
-			let canResize = true;
-			
 			//new element location
-			let newLoc = new jsWinUI.rectangle({
+			const newLoc = new jsWinUI.rectangle({
 				top: elementRect.top + dy,
 				left: elementRect.left,
 				bottom: elementRect.bottom,
@@ -500,7 +499,8 @@ var jsWinUI = (function(){
 			if (this.options.minHeight !== undefined && newLoc.height < this.options.minHeight) { canResize = false; }
 			if (this.options.maxHeight !== undefined && newLoc.height > this.options.maxHeight) { canResize = false; }
 			if (this.options.uiBounds !== undefined && newLoc.top < this.options.uiBounds.top) { canResize = false; }
-			//if we are in bounds
+			
+            //if we are in bounds
 			if(canResize) {
 				//set the new width
 				this.options.element.style.height = newLoc.height + "px";
@@ -511,21 +511,20 @@ var jsWinUI = (function(){
 			}
 		}
 		if (handleName === "s" || handleName[0] === "s") { //bottom border
-			let canResize = true;
 			//new element location
-			let newLoc = new jsWinUI.rectangle({
+			const newLoc = new jsWinUI.rectangle({
 				top: elementRect.top,
 				left: elementRect.left,
 				bottom: elementRect.bottom + dy,
 				right: elementRect.right
 			});
+            
 			//make sure in bounds
 			if (this.options.minHeight !== undefined && newLoc.height < this.options.minHeight) { canResize = false; }
 			if (this.options.maxHeight !== undefined && newLoc.height > this.options.maxHeight) { canResize = false; }
-			if (this.options.uiBounds !== undefined && newLoc.bottom > (this.options.uiBounds.bottom) ) { 
-				canResize = false; 
-			}
-			//if we are in bounds
+			if (this.options.uiBounds !== undefined && newLoc.bottom > (this.options.uiBounds.bottom) ) { canResize = false; }
+			
+            //if we are in bounds
 			if(canResize) {
 				this.options.element.style.height = newLoc.height + "px";
 			} else {
@@ -533,21 +532,22 @@ var jsWinUI = (function(){
 			}
 		}
 		if (handleName === "e" || handleName[1] === "e") { //right border
-			let canResize = true;
 			//new element location
-			let newLoc = new jsWinUI.rectangle({
+			const newLoc = new jsWinUI.rectangle({
 				top: elementRect.top,
 				left: elementRect.left,
 				bottom: elementRect.bottom,
 				right: elementRect.right + dx
 			});
+            
 			//make sure in bounds
 			if (this.options.minWidth !== undefined && newLoc.width < this.options.minWidth) { canResize = false; }
 			if (this.options.maxWidth !== undefined && newLoc.width > this.options.maxWidth) { canResize = false; }
 			if (this.options.uiBounds !== undefined && newLoc.right > (this.options.uiBounds.right) ) { 
 				canResize = false; 
 			}
-			//if we are in bounds
+			
+            //if we are in bounds
 			if(canResize) {
 				this.options.element.style.width = newLoc.width + "px";
 			} else {
@@ -555,19 +555,20 @@ var jsWinUI = (function(){
 			}
 		}
 		if (handleName === "w" || handleName[1] === "w") { //left Border
-			let canResize = true;
 			//new element location
-			let newLoc = new jsWinUI.rectangle({
+			const newLoc = new jsWinUI.rectangle({
 				top: elementRect.top,
 				left: elementRect.left + dx,
 				bottom: elementRect.bottom,
 				right: elementRect.right
 			});
-			//make sure in bounds		
+			
+            //make sure in bounds		
 			if (this.options.minWidth !== undefined && newLoc.width < this.options.minWidth) { canResize = false; }
 			if (this.options.maxWidth !== undefined && newLoc.width > this.options.maxWidth) { canResize = false; }
 			if (this.options.uiBounds !== undefined && newLoc.left < this.options.uiBounds.left) { canResize = false; }
-			//if we are in bounds
+			
+            //if we are in bounds
 			if(canResize) {
 				//set the new width
 				this.options.element.style.width = newLoc.width + "px";
@@ -590,7 +591,7 @@ var jsWinUI = (function(){
 		}
 		
 		//reposition the handle
-		let handle = this.handlers[handleName].handle;
+		const handle = this.handlers[handleName].handle;
 		this.placeHandle(handle, handleName);
 	};
 	
@@ -600,7 +601,7 @@ var jsWinUI = (function(){
 	 * @param handleName {string} the handle to check
 	 */
 	resizable.prototype.checkInside = function(event, handleName) {
-		let elementRect = new jsWinUI.rectangle( this.options.element.getBoundingClientRect() );
+		const elementRect = new jsWinUI.rectangle( this.options.element.getBoundingClientRect() );
 		if (!elementRect.containsPoint( { x: event.clientX, y: event.clientY } ) ) {
 			document.body.classList.remove("handle-" + handleName);
 			this.handlers[handleName].upfn(event);
@@ -628,7 +629,7 @@ var jsWinUI = (function(){
 		
 		// Validate uiBounds
 		if (this.options.uiBounds !== undefined) {
-			let tempRect = new jsWinUI.rectangle(this.options.uiBounds);
+			const tempRect = new jsWinUI.rectangle(this.options.uiBounds);
 			this.options.uiBounds = tempRect.good ? tempRect : undefined;
 			if (!tempRect.good) { console.error("Resizable: [WARNING] 'uiBounds' option was malformed for " + this.options.element.getAttribute("id") );}
 		}
@@ -643,16 +644,17 @@ var jsWinUI = (function(){
 	 */
 	draggable.prototype.initHandles = function() {
 		// Create handles
-		let handleNames = [];
-		if (this.options.handles) {
-			handleNames = this.options.handles.split(',').map(handle => handle.trim()); // Trim each handle name
-		} else { 
-			handleNames[0] = this.options.element.getAttribute("id");
-		}
-		//set up the handles
+		const handleNames = [];
+        if (this.options.handles) {
+            handleNames.push(...this.options.handles.split(',').map(handle => handle.trim())); // Trim each handle name and add to handleNames
+        } else { 
+            handleNames[0] = this.options.element.getAttribute("id");
+        }
+		
+        //set up the handles
         handleNames.forEach(handleName => {
 			//get the handle
-            let handle = document.getElementById(handleName);
+            const handle = document.getElementById(handleName);
 			
 			//store reference in the dictionary
 			this.handlers[handleName] = {};
@@ -751,8 +753,8 @@ var jsWinUI = (function(){
 	 */
 	draggable.prototype.moveElement = function(event, handleName) {
 		// Calculate the delta from initial mouse position to current mouse position
-        let dy = event.clientY - this.initialPos.y;
-        let dx = event.clientX - this.initialPos.x;
+        const dy = event.clientY - this.initialPos.y;
+        const dx = event.clientX - this.initialPos.x;
 
         // Calculate the new element position based on the mouse movement and mouse anchor
         let newTop = event.clientY + this.mouseAnchor.y;
@@ -789,7 +791,7 @@ var jsWinUI = (function(){
     
     // Function to check if the mouse is within the bounds of the handle
     draggable.prototype.isMouseWithinHandle = function(event, handleName) {
-        let handleRect = document.getElementById(handleName).getBoundingClientRect();
+        const handleRect = document.getElementById(handleName).getBoundingClientRect();
         return (
             event.clientX >= handleRect.left &&
             event.clientX <= handleRect.right &&
@@ -939,46 +941,46 @@ var jsWinUI = (function(){
 	 * @param _delay {number} delay in millisecond between each step, default = 50
 	 */
 	function fadeIn(_el, _speed = 0.1, _delay = 50) {
-		//check for element existance
-		let el = null;
-		if (_el instanceof Element) {
-			//it's an Element, try to grab it from the DOM
-			el = document.getElementById(_el.getAttribute("id"));
-		} else {
-			//it is not an element			
+		if (!(_el instanceof Element)) {
+        	//it is not an element			
 			console.log("Element is not an Element");
-		}
-		
-		if (!el) {
-			//it is not in the DOM
-			console.log("Element is not in the DOM");
 		} else {
-			//all good, set up the animation
-			let speed = (_speed==="fast")? 0.25 : (_speed==="slow") ? 0.05 : _speed;
-			let opacity = 0;
-			let delay = _delay;
-			
-			//set initial opacity
-			el.style.opacity =  opacity; 
-            el.style.visibility = "visible";
-            el.style.display = "";
-			
-			//set up the animation loop
-			const fadeInStep = () => {
-				//add speed
-				opacity += speed;
-				if (opacity > 1) { opacity = 1; }
-				//set new opacity
-				el.style.opacity = opacity;
-				if (opacity < 1) {
-					//loop until opacity is 1
-					setTimeout(fadeInStep, delay);
-				}
-			};
-			
-			//start the animation loop
-			fadeInStep();
-		}
+            //check for element existance
+            const el = document.getElementById(_el.getAttribute("id"));
+
+            if (!el) {
+                //it is not in the DOM
+                console.log("Element is not in the DOM");
+            } else {
+                //all good, set up the animation
+                const speed = (_speed==="fast")? 0.25 : (_speed==="slow") ? 0.05 : _speed;
+                const delay = _delay;
+
+                //the changing opacity
+                let opacity = 0;
+
+                //set initial opacity
+                el.style.opacity =  opacity; 
+                el.style.visibility = "visible";
+                el.style.display = "";
+
+                //set up the animation loop
+                const fadeInStep = () => {
+                    //add speed
+                    opacity += speed;
+                    if (opacity > 1) { opacity = 1; }
+                    //set new opacity
+                    el.style.opacity = opacity;
+                    if (opacity < 1) {
+                        //loop until opacity is 1
+                        setTimeout(fadeInStep, delay);
+                    }
+                };
+
+                //start the animation loop
+                fadeInStep();
+            }
+        }
 	}
 	
 	/**
@@ -989,51 +991,53 @@ var jsWinUI = (function(){
 	 */
 	function fadeOut(_el, _speed = 0.1, _delay = 50) {
 		//check for element existance
-		let el = null;
-		if (_el instanceof Element) {
-			//it's an Element, try to grab it from the DOM
-			el = document.getElementById(_el.getAttribute("id"));
-		} else {
-			//it is not an element			
+		if (!(_el instanceof Element)) {
+        //it is not an element			
 			console.log("Element is not an Element");
-		}
-		
-		if (!el) {
-			//it is not in the DOM
-			console.log("Element is not in the DOM");
-		} else {
-			//all good, set up the animation
-			let speed = (_speed==="fast")? 0.25 : (_speed==="slow") ? 0.05 : _speed;
-			let opacity = 1;
-			let delay = _delay;
-			
-			//set initial opacity
-			el.style.opacity =  opacity; 
-            el.style.visibility = "visible";
-            el.style.display = "";
-			
-			//set up the animation loop
-			const fadeOutStep = () => {
-				//add speed
-				opacity = opacity - speed;
-				if (opacity < 0) { opacity = 0; }
-				//set new opacity
-				el.style.opacity = opacity;
-				if (opacity > 0) {
-					//loop until opacity is 1
-					setTimeout(fadeOutStep, delay);
-				} else {
-					//reset
-					el.style.opacity = 1;
-                    el.style.visibility = "hidden";
-                    el.style.display = "none";
-				}					
-					
-			};
-			
-			//start the animation loop
-			fadeOutStep();
-		}
+        } else {
+        
+            //it's an Element, try to grab it from the DOM        
+            const el = document.getElementById(_el.getAttribute("id"));
+
+            if (!el) {
+                //it is not in the DOM
+                console.log("Element is not in the DOM");
+            } else {
+                //all good, set up the animation
+                const speed = (_speed==="fast")? 0.25 : (_speed==="slow") ? 0.05 : _speed;
+                const delay = _delay;
+
+                //the changing opacity
+                let opacity = 1;
+
+                //set initial opacity
+                el.style.opacity =  opacity; 
+                el.style.visibility = "visible";
+                el.style.display = "";
+
+                //set up the animation loop
+                const fadeOutStep = () => {
+                    //add speed
+                    opacity = opacity - speed;
+                    if (opacity < 0) { opacity = 0; }
+                    //set new opacity
+                    el.style.opacity = opacity;
+                    if (opacity > 0) {
+                        //loop until opacity is 1
+                        setTimeout(fadeOutStep, delay);
+                    } else {
+                        //reset
+                        el.style.opacity = 1;
+                        el.style.visibility = "hidden";
+                        el.style.display = "none";
+                    }					
+
+                };
+
+                //start the animation loop
+                fadeOutStep();
+            }
+        }
 	}
 	
 	return {
@@ -1049,7 +1053,7 @@ var jsWinUI = (function(){
 /*************/
 /* HTMLMAKER */
 /*************/
-var HTMLMAKER = (function () {		
+const HTMLMAKER = (function () {		
 	/**
 	* This function creates an html string from an array of nodes names and values
 	* There is no sanity here.
@@ -1057,22 +1061,22 @@ var HTMLMAKER = (function () {
 	* 
 	* @returns {string} the HTML in a string
 	*/
-	function makeString(elementData) {
+	function makeString(_elementData) {
 		//we at least need a tag type, div or a span, ect.
-		if (elementData.tag === undefined || elementData.tag === "") { 
+		if (_elementData.tag === undefined || _elementData.tag === "") { 
 			return ''; 
 		}
 		
 		//start the opening tag
-		var htmlString = '<' + elementData.tag;
+		let htmlString = '<' + _elementData.tag;
 		
 		//add nodes
-		for (var key in elementData) {
-			if (elementData.hasOwnProperty(key) && 
+		for (const key in _elementData) {
+			if (_elementData.hasOwnProperty(key) && 
 					key !== "tag" && 
 					key !== 'text' && 
 					key !== 'innerHTML') {
-				htmlString += ' ' + key + '="' + elementData[key] + '"';
+				htmlString += ' ' + key + '="' + _elementData[key] + '"';
 			}
 		}
 
@@ -1080,17 +1084,17 @@ var HTMLMAKER = (function () {
 		htmlString += '>';
 
 		// Add inner text or content
-		if (elementData.text) {
-			htmlString += elementData.text;
+		if (_elementData.text) {
+			htmlString += _elementData.text;
 		}
 		//either or here, exclude text to add another HTML string here
 		// Add inner HTML content
-		else if (elementData.innerHTML) {
-			htmlString += elementData.innerHTML;
+		else if (_elementData.innerHTML) {
+			htmlString += _elementData.innerHTML;
 		}
 		
 		// Close the element
-		htmlString += '</' + elementData.tag + '>';
+		htmlString += '</' + _elementData.tag + '>';
 
 		return htmlString;
 	}
@@ -1101,10 +1105,10 @@ var HTMLMAKER = (function () {
 	* 
 	* @returns {DOMelement} the HTML DOM element
 	*/
-	function makeElement(htmlString) {
+	function makeElement(_htmlString) {
 		try {
-			var tempDiv = document.createElement('div');
-			tempDiv.innerHTML = htmlString.trim();
+			const tempDiv = document.createElement('div');
+			tempDiv.innerHTML = _htmlString.trim();
 			
 			// If there's only one child element, return it directly
 			if (tempDiv.childNodes.length === 1) {
@@ -1112,7 +1116,7 @@ var HTMLMAKER = (function () {
 			} else {
 				// If there are multiple child nodes, create a container element
 				// and append the children to it
-				var container = document.createElement('div');
+				const container = document.createElement('div');
 				while (tempDiv.childNodes.length > 0) {
 					container.appendChild(makeElement.createDOMFromNode(tempDiv.childNodes[0]));
 				}
@@ -1125,19 +1129,19 @@ var HTMLMAKER = (function () {
 	}
     
     // Function to recursively create DOM elements from child nodes
-    makeElement.createDOMFromNode = function(node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-            return document.createTextNode(node.textContent);
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-            var element = document.createElement(node.tagName.toLowerCase());
+    makeElement.createDOMFromNode = function(_node) {
+        if (_node.nodeType === Node.TEXT_NODE) {
+            return document.createTextNode(_node.textContent);
+        } else if (_node.nodeType === Node.ELEMENT_NODE) {
+            const element = document.createElement(_node.tagName.toLowerCase());
             // Copy attributes
-            for (let i = 0; i < node.attributes.length; i++) {
-                var attr = node.attributes[i];
+            for (let i = 0; i < _node.attributes.length; i++) {
+                const attr = _node.attributes[i];
                 element.setAttribute(attr.nodeName, attr.nodeValue);
             }
             // Recursively process child nodes
-            for (let i = 0; i < node.childNodes.length; i++) {
-                var child = node.childNodes[i];
+            for (let i = 0; i < _node.childNodes.length; i++) {
+                const child = _node.childNodes[i];
                 element.appendChild(makeElement.createDOMFromNode(child));
             }
             return element;
@@ -1150,15 +1154,14 @@ var HTMLMAKER = (function () {
 	* 
 	* @returns {string} the HTML in a string
 	*/
-	function decodeHTML(domElement) {
-		if (!domElement) {
+	function decodeHTML(_domElement) {
+		if (!_domElement) {
 			console.error("HTMLMAKER: Invalid DOM element or null string.");
 			return '';
 		}
 		
-		let htmlString = '';
 		try {
-			htmlString = domElement.outerHTML;
+			const htmlString = _domElement.outerHTML;
 			return htmlString;
 		} catch (error) {
 			console.error("HTMLMAKER: Invalid DOM element:", error);
@@ -1172,11 +1175,11 @@ var HTMLMAKER = (function () {
 	* 
 	* @returns {boolean} true if just a single tag
 	*/
-	function isSingleTag(htmlString) {
+	function isSingleTag(_htmlString) {
 		// Define a regular expression to match a single opening tag without a closing tag
-		var regex = /^<[^>]+>$/;
+		const regex = /^<[^>]+>$/;
 		// Test if the HTML string matches the regular expression
-		return regex.test(htmlString);
+		return regex.test(_htmlString);
 	}
 
 	return {
@@ -1193,7 +1196,7 @@ var HTMLMAKER = (function () {
 function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
     
     //default window manager options
-    let defaultOptions = {
+    const defaultOptions = {
         minHeight: 100,
         minWidth: 200,
         getDataFn: undefined,
@@ -1208,11 +1211,11 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         themePrefix: 'light',
         borderRadius: '10',
         projectTitle: 'jsWin',
-        version: "0.0.6"
+        version: "0.0.7"
     };
 
     //default window data
-    let defaultWindowData = {
+    const defaultWindowData = {
         id: undefined, // *Required* Specifies the unique 3+ digit identifier of the window model. IDs below 200 are reserved for the system.
         title: "", // *Required* Specifies the title of the window.
         content: "", // *Required*  Specifies the HTML content to be displayed within the window.
@@ -1293,7 +1296,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             }
         });
         
-        let securityTag = document.getElementById("jsWinAppSecurity");
+        const securityTag = document.getElementById("jsWinAppSecurity");
         if (securityTag) {
             //we may have a hacker
             console.log("Window Manager: (WARNING) Unauthorized attempt to initialize. App instance with id " + securityTag.getAttribute("app-id") + " already running."); 
@@ -1364,8 +1367,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @brief This function gets the size of the viewport in the browser window.
      * @return {height: number, width: number} The height and width of the viewport
      */
-   windowManager.prototype.getViewportSize = function(){
-        let boundingRect = this.element.getBoundingClientRect();
+    windowManager.prototype.getViewportSize = function(){
+        const boundingRect = this.element.getBoundingClientRect();
         return {
             //2 here is window pane border width, this should be a customizable system option
             height: boundingRect.height + ( this.options.taskbar ? -50: 0) - 2,
@@ -1384,11 +1387,11 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         //2 here is window pane border width, this should be a customizable system option
         //background and taskbar are full size
-        let size = {height: (this.uiBounds.height + 2) + "px", width: (this.uiBounds.width + 2) + "px" };
+        const size = {height: (this.uiBounds.height + 2) + "px", width: (this.uiBounds.width + 2) + "px" };
 
         // background size
         if(this.options.background !== "") {                
-            let background = document.getElementById(this.backgroundID);
+            const background = document.getElementById(this.backgroundID);
             background.style.height = size.height;
             background.style.width = size.width;
         }
@@ -1398,8 +1401,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         //update resizables and draggables
 
-        for (let index in this.paneList) {
-            let pane = this.paneList[index];
+        for (const index in this.paneList) {
+            const pane = this.paneList[index];
             if (pane.resizeable !== undefined) { pane.resizeable.options.uiBounds = this.uiBounds; }
             if (pane.draggable !== undefined) { pane.draggable.options.uiBounds = this.uiBounds; }
             if (pane.big) { 
@@ -1410,14 +1413,14 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 pane.width = this.uiBounds.width;
 
                 //ids
-                let paneID = pane.elIDs.containerID;
-                let titleID = pane.elIDs.titlebarID;
-                let contentID = pane.elIDs.contentID;
+                const paneID = pane.elIDs.containerID;
+                const titleID = pane.elIDs.titlebarID;
+                const contentID = pane.elIDs.contentID;
 
                 //elements
-                let objParent = document.getElementById(paneID); //entire window
-                let objTitle = document.getElementById(titleID);
-                let objChild = document.getElementById(contentID);
+                const objParent = document.getElementById(paneID); //entire window
+                const objTitle = document.getElementById(titleID);
+                const objChild = document.getElementById(contentID);
 
                 //set it
                 objParent.style.top = pane.y + "px";
@@ -1429,7 +1432,6 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
                 objChild.style.width = objParent.style.width;
                 objChild.style.height = (objParent.style.height.split('p')[0] - objTitle.style.height.split('p')[0]) + "px";
-                let z = 0;
             }
         }
     };
@@ -1440,16 +1442,16 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      */
     windowManager.prototype.makeTaskbar = function() {
         //ids
-        let taskBarID = "taskbar-" + this.appID;
-        let trayContainerID = "trays-" + this.appID;
-        let startButtonID = "start-" + this.appID;
-        let startTDID = "start-td-" + this.appID;
-        let buttonsTDID = "buttons-td-" + this.appID;
-        let traysTDID = "trays-td-" + this.appID;
-        let projectTDID = "project-td-" + this.appID;
+        const taskBarID = "taskbar-" + this.appID;
+        const trayContainerID = "trays-" + this.appID;
+        const startButtonID = "start-" + this.appID;
+        const startTDID = "start-td-" + this.appID;
+        const buttonsTDID = "buttons-td-" + this.appID;
+        const traysTDID = "trays-td-" + this.appID;
+        const projectTDID = "project-td-" + this.appID;
         
         //button
-        let startButton = HTMLMAKER.makeString({ 
+        const startButton = HTMLMAKER.makeString({ 
             tag: 'button', 
             id: startButtonID, 
             class: (options.themePrefix + "-start-menu"), 
@@ -1457,24 +1459,24 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         });
 
         //tray container
-        let trayContainer = HTMLMAKER.makeString({ tag: 'div', id: trayContainerID });
+        const trayContainer = HTMLMAKER.makeString({ tag: 'div', id: trayContainerID });
 
         //table data
-        let startTD = HTMLMAKER.makeString({
+        const startTD = HTMLMAKER.makeString({
             tag: 'td',
             id: startTDID,
             style: 'width: 62px; flex: 0 0 auto;',
             innerHTML: HTMLMAKER.makeString({ tag: 'div', style: 'overflow: visible;', innerHTML: startButton })
         });
 
-        let traysTD = HTMLMAKER.makeString({
+        const traysTD = HTMLMAKER.makeString({
             tag: 'td',
             id: traysTDID,
             style: 'flex-grow: 4; min-width: 100px; display: flex; height: 50px; justify-content: left; align-items: center;',
             innerHTML: HTMLMAKER.makeString({ tag: 'div', style: "overflow: auto;", innerHTML: trayContainer })
         });
 
-        let projectTD = HTMLMAKER.makeString({
+        const projectTD = HTMLMAKER.makeString({
             tag: 'td',
             id: projectTDID,
             style: 'max-width: 80px; min-width: 40px; width: auto; flex-grow: 1;',
@@ -1485,7 +1487,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             })
         });
 
-        let customItems = this.options.customTaskbarItems.map(item => {
+        const customItems = this.options.customTaskbarItems.map(item => {
             let id = item.name + "-button-" + this.appID;
             let content = HTMLMAKER.makeString({
                 tag: item.click ? 'button' : 'div',
@@ -1502,7 +1504,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         });
         
         let customIndex = 0;
-        let row = this.options.taskbarItems.map(item => {
+        const row = this.options.taskbarItems.map(item => {
             switch(item) {
                 case "start":
                     return startTD;
@@ -1512,7 +1514,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                     return projectTD;
                 case "custom":
                     if (customItems.length > customIndex) {
-                        let customItem = customItems[customIndex];
+                        const customItem = customItems[customIndex];
                         customIndex++;
                         return HTMLMAKER.makeString({
                             tag: 'td',
@@ -1533,7 +1535,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
 
         //taskbar, the container and navbar classes are provided by bootstrap.css
-        let taskbar = HTMLMAKER.makeElement(HTMLMAKER.makeString({
+        const taskbar = HTMLMAKER.makeElement(HTMLMAKER.makeString({
             tag: 'div',
             id: taskBarID,
             class: (options.themePrefix + "-tray container-fluid navbar navbar-fixed-bottom"),
@@ -1552,12 +1554,12 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         this.element.appendChild(taskbar);
         
         //attach click handlers, get elements first for sanity            
-        let startButtonEl =  document.getElementById(startButtonID);
-        let buttonsEl =  document.getElementById(buttonsTDID);
-        let traysEl =  document.getElementById(traysTDID);
-        let projectEl =  document.getElementById(projectTDID);
+        const startButtonEl =  document.getElementById(startButtonID);
+        const buttonsEl =  document.getElementById(buttonsTDID);
+        const traysEl =  document.getElementById(traysTDID);
+        const projectEl =  document.getElementById(projectTDID);
         
-        let customEL = customItems.map(item => {
+        const customEL = customItems.map(item => {
             return document.getElementById(item.id);
         });
 
@@ -1600,16 +1602,16 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      */
     windowManager.prototype.removeTaskbar = function() {
         //todo: remove the tray buttons and their event handlers
-        for (var pane in this.paneList) { 
+        for (const pane in this.paneList) { 
             //closeWindow.removeTray(paneList.pane);
         }
 
         // get elements first for sanity            
-        let startButtonEl =  document.getElementById(this.taskbarIDs.startButtonID);
-        let buttonsEl =  document.getElementById(this.taskbarIDs.buttonsTDID);
-        let traysEl =  document.getElementById(this.taskbarIDs.traysTDID);
-        let projectEl =  document.getElementById(this.taskbarIDs.projectTDID);
-        let datetimeEl =  document.getElementById(this.taskbarIDs.datetimeTDID);
+        const startButtonEl =  document.getElementById(this.taskbarIDs.startButtonID);
+        const buttonsEl =  document.getElementById(this.taskbarIDs.buttonsTDID);
+        const traysEl =  document.getElementById(this.taskbarIDs.traysTDID);
+        const projectEl =  document.getElementById(this.taskbarIDs.projectTDID);
+        const datetimeEl =  document.getElementById(this.taskbarIDs.datetimeTDID);
 
         //remove event handlers
         if (startButtonEl) { startButtonEl.removeEventListener("click", this.startMenuButtonClick); }
@@ -1628,13 +1630,13 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      */
     windowManager.prototype.makeBackground = function() {
         //id
-        let backID = "background-" + this.appID;
+        const backID = "background-" + this.appID;
 
         //size
-        let size = "height: " + this.uiBounds.height + "px; width: " + this.uiBounds.width + "px;";
+        const size = "height: " + this.uiBounds.height + "px; width: " + this.uiBounds.width + "px;";
 
         //the background container
-        let background = HTMLMAKER.makeElement(HTMLMAKER.makeString({ 
+        const background = HTMLMAKER.makeElement(HTMLMAKER.makeString({ 
             tag: 'div', 
             id: backID + "-container", 
             innerHTML: HTMLMAKER.makeString({ 
@@ -1663,7 +1665,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      */
     windowManager.prototype.updateBackground = function() { 
         if(this.backgroundID !== undefined) {
-            let background = document.getElementById(this.backgroundID);
+            const background = document.getElementById(this.backgroundID);
             background.setAttribute('src', this.options.background);
         } else {
             this.backgroundID = this.makeBackground();
@@ -1675,10 +1677,11 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {Object} event the click event. 
      * 
      */
-    windowManager.prototype.startMenuButtonClick = function(event) {
+    windowManager.prototype.startMenuButtonClick = function(_event) {
         //we are consuming the event
-        event.preventDefault();
-        this.system.startMenu(); // build and show the start menu
+        _event.preventDefault();
+        // build and show the start menu
+        this.system.startMenu();
     }.bind(this);
         
     /**
@@ -1686,14 +1689,17 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {Object} event the click event. 
      * 
      */
-    windowManager.prototype.closeStartMenuOnClick = function(event) {
+    windowManager.prototype.closeStartMenuOnClick = function(_event, _force = false) {
+        //we are consuming the event
+        _event.preventDefault();
+        
         //check the open windows
         if (Object.keys(this.system.paneList).length !== 0) {
-            for (let pane of this.system.paneList) {
+            for (const pane of this.system.paneList) {
                 // Check if the clicked element is not an open menu
                 if(pane.id === 1){ 
                     let win = document.getElementById(pane.elIDs.containerID);
-                    if(!this.system.isDescendant(win, event.target)) { this.system.closeWindow(pane.objID); }
+                    if(!this.system.isDescendant(win, _event.target) || _force) { this.system.closeWindow(pane.objID); }
                 }
             }
         }
@@ -1715,7 +1721,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 return -1;
             }
             //get the window data
-            let callBack = function(data) {                    
+            const callBack = function(data) {                    
                 return this.openWindow.showWindow(data);
             };
             options.getDataFn(_test, callBack);        
@@ -1732,12 +1738,12 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      *
      */
     windowManager.prototype.showWindow = function(_data) {
-        let data = Object.assign({}, defaultWindowData, _data);
+        const data = Object.assign({}, defaultWindowData, _data);
 
         //can we open it?
         let canOpen = true;			
         if (data.oneInstance === true) { // if the app can only have one instance
-            for (let pane of this.paneList) {
+            for (const pane of this.paneList) {
                 if(pane.title === data.title){ //find machting title
                     canOpen = false; //found it, set flag, stop loop
                     if(pane.id===1) {
@@ -1757,7 +1763,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         //open overlay first
         if(data.isModal) {
-            let modalID = this.modalOverlay();
+            const modalID = this.modalOverlay();
             this.options.taskbar = false;
             //concatenant onExit
             if (data.onExit === undefined) { data.onExit = ""; }
@@ -1766,7 +1772,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         this.paneList.push(data);
 
-        let index = this.paneList.length - 1;
+        const index = this.paneList.length - 1;
         this.paneList[index].index = index;
         //we need a unique objID
         //assume not unique
@@ -1785,12 +1791,12 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         }
         //set a unique window id				
         this.paneList[index].windID = this.paneList[index].id + "-obj" + this.paneList[index].objID;
-        let windID = this.paneList[index].windID;
+        const windID = this.paneList[index].windID;
 
         //load required data
         if (data.reqData !== undefined ) {
-            let url = this.options.dataurl + "&mode=" + data.reqData;
-            let callback = function(reqData) {
+            const url = this.options.dataurl + "&mode=" + data.reqData;
+            const callback = function(reqData) {
                 this.paneList[index].data = reqData;
             };
             this.options.getDataFn(url, callback);
@@ -1800,34 +1806,35 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         if(this.paneList[index].requireJS !== undefined) { //does this array exist?
             this.paneList[index].loadedScripts = [];
             for (var js in this.paneList[index].requireJS) { //it does, loop through items in array
-                let script = this.paneList[index].requireJS[js];
-                let scriptID = this.loadScript(script); //load each script
+                const script = this.paneList[index].requireJS[js];
+                const scriptID = this.loadScript(script); //load each script
                 this.paneList[index].loadedScripts.push(scriptID);
             }//let that load, we'll come back to it					
         }
 
         this.paneList[index].elIDs = this.makeWindow(this.paneList[index]);
 
+        //we needed a pause to let AngularJS build the ng-for, we probally don't need this anymore
         callBack = function(windID) {
             let index = -1;
-            for (var pane in this.paneList) { //find machting unique objID
+            for (const pane in this.paneList) { //find machting unique objID
                 if(this.paneList[pane].windID === windID ){                                        
                     index = pane;
                     break;
                 }
             }
 
-            let objParent = document.getElementById(this.paneList[index].elIDs.containerID); //entire window
+            const objParent = document.getElementById(this.paneList[index].elIDs.containerID); //entire window
             //titlebar 
-            let objTitle = document.getElementById(this.paneList[index].elIDs.titlebarID);
+            const objTitle = document.getElementById(this.paneList[index].elIDs.titlebarID);
             //contentpane 
-            let objContent = document.getElementById(this.paneList[index].elIDs.contentID);
+            const objContent = document.getElementById(this.paneList[index].elIDs.contentID);
 
             //should be customizable
             if (objTitle) { objTitle.style.height = "20px"; }
 
             //make sure new window on top
-            let max = this.getMaxZ();
+            const max = this.getMaxZ();
             objParent.style.zIndex = max;
             this.paneList[index].zindex = max;
 
@@ -1844,7 +1851,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             objParent.style.width = this.paneList[index].width + "px";
             objContent.style.height = (this.paneList[index].titlebar ? this.paneList[index].height - objTitle.style.height.split('p')[0] : this.paneList[index].height) + "px" ;
             objContent.style.width = this.paneList[index].width + "px";
-            let startHeight = this.paneList[index].height;
+            const startHeight = this.paneList[index].height;
 
             //is it a menu?
             if (this.paneList[index].id === 100) { this.menuIndex = index; }
@@ -1926,7 +1933,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                     system: this,
                     drag: function(event, options){ 
                         //ids
-                        let paneID = options.pane.elIDs.containerID;
+                        const paneID = options.pane.elIDs.containerID;
                         
                         options.pane.x = options.pane.left = this.element.style.left.split('p')[0];
                         options.pane.y = options.pane.top = this.element.style.top.split('p')[0];
@@ -1950,19 +1957,19 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                     pane: this.paneList[index],
                     system: this,
                     start: function (event,options){
-                        let max = options.system.getMaxZ(options.pane.index);
+                        const max = options.system.getMaxZ(options.pane.index);
                         options.pane.zindex = max;
                         this.element.style.zIndex = max;
                         options.zindex = max + 1;
                     },
                     resize: function(event,options,handleName) {
                          //ids
-                        let titleID = options.pane.elIDs.titlebarID;
-                        let contentID = options.pane.elIDs.contentID;
+                        const titleID = options.pane.elIDs.titlebarID;
+                        const contentID = options.pane.elIDs.contentID;
 
                         //elements
-                        let objTitle = document.getElementById(titleID);
-                        let objChild = document.getElementById(contentID);
+                        const objTitle = document.getElementById(titleID);
+                        const objChild = document.getElementById(contentID);
 
                         options.pane.left = options.pane.x = this.element.style.left;
                         options.pane.top = options.pane.y = this.element.style.top; 
@@ -1984,7 +1991,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             //show the tray
             if(this.paneList[index].showTray && this.paneList[index].trayIDS) {
                 //sanity, does it really exist?
-                let tray = document.getElementById(this.paneList[index].trayIDS.trayID);
+                const tray = document.getElementById(this.paneList[index].trayIDS.trayID);
                 if (tray) {
                     jsWinUI.fadeIn(tray, 'fast');        
                 }
@@ -2009,63 +2016,63 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @brief This function makes the window and adds it to the DOM
      * @param {object} the array indice for this window pane 
      */
-    windowManager.prototype.makeWindow = function(pane) {
-        let containerID = "app" + this.appID + "-window" + pane.windID;
-        let titlebarID = "app" + this.appID + "-titlebar" + pane.windID;
-        let contentID = "app" + this.appID + "-content" + pane.windID;
-        let exitButtonID = "app" + this.appID + "-exitButton" + pane.windID;
-        let minButtonID = "app" + this.appID + "-minButton" + pane.windID;
-        let maxButtonID = "app" + this.appID + "-maxButton" + pane.windID;
+    windowManager.prototype.makeWindow = function(_pane) {
+        const containerID = "app" + this.appID + "-window" + _pane.windID;
+        const titlebarID = "app" + this.appID + "-titlebar" + _pane.windID;
+        const contentID = "app" + this.appID + "-content" + _pane.windID;
+        const exitButtonID = "app" + this.appID + "-exitButton" + _pane.windID;
+        const minButtonID = "app" + this.appID + "-minButton" + _pane.windID;
+        const maxButtonID = "app" + this.appID + "-maxButton" + _pane.windID;
 
-        let bookmarkTitle = pane.title + " - " + this.options.projectTitle + "&app=" + pane.title;
+        const bookmarkTitle = _pane.title + " - " + this.options.projectTitle + "&app=" + _pane.title;
 
-        let title = HTMLMAKER.makeString({
+        const title = HTMLMAKER.makeString({
             tag: 'span',
             style: 'float: left; text-align: left',
-            innerHTML: ( (pane.canBookmark) ? bookmarkTitle : pane.title)
+            innerHTML: ( (_pane.canBookmark) ? bookmarkTitle : _pane.title)
         });
 
-        let exitButton = HTMLMAKER.makeString({
+        const exitButton = HTMLMAKER.makeString({
             tag: 'button',
             id: exitButtonID,
             style: 'float: right; text-align: right',
             innerHTML: 'X'
         });
 
-        let maxButton = HTMLMAKER.makeString({
+        const maxButton = HTMLMAKER.makeString({
             tag: 'button',
             id: maxButtonID,
             style: 'float: right; text-align: right',
             innerHTML: '&#9635;'
         });
 
-        let minButton = HTMLMAKER.makeString({
+        const minButton = HTMLMAKER.makeString({
             tag: 'button',
             id: minButtonID,
             style: 'float: right; text-align: right',
             innerHTML: '&#9644;'
         });
 
-        let titlebar = HTMLMAKER.makeString({
+        const titlebar = HTMLMAKER.makeString({
             tag: 'div',
             id: titlebarID,
             class: this.options.themePrefix + "-title-bar",
-            innerHTML: title + ( (pane.showExit)?exitButton:"") + ( (pane.showMaximize)?maxButton:"") + ( (pane.showMinimize)?minButton:"")
+            innerHTML: title + ( (_pane.showExit)?exitButton:"") + ( (_pane.showMaximize)?maxButton:"") + ( (_pane.showMinimize)?minButton:"")
         });
 
-        let body = HTMLMAKER.makeString({
+        const body = HTMLMAKER.makeString({
             tag: 'div',
             id: contentID,
             class: this.options.themePrefix + "-pane-body",
-            innerHTML: pane.content
+            innerHTML: _pane.content
         });
 
-        let windowPane = HTMLMAKER.makeElement(HTMLMAKER.makeString({
+        const windowPane = HTMLMAKER.makeElement(HTMLMAKER.makeString({
             tag: 'div',
             id: containerID,
             style: 'display: none;',
             class: this.options.themePrefix + "-window",
-            innerHTML: ( (pane.showTitlebar)?titlebar:"") + body
+            innerHTML: ( (_pane.showTitlebar)?titlebar:"") + body
         }));
 
         this.element.appendChild(windowPane);
@@ -2074,26 +2081,26 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         this.setupDataBinding(document.getElementById(contentID));
 
         //set up click binding
-        this.setupClickBinding(document.getElementById(contentID), pane, (pane.id === 1) );
+        this.setupClickBinding(document.getElementById(contentID), _pane, (_pane.id === 1) );
 
         //attach click handlers, get elements first for sanity            
-        let exitButtonEl = document.getElementById(exitButtonID);
-        let maxButtonEl = document.getElementById(maxButtonID);
-        let minButtonEl = document.getElementById(minButtonID);
+        const exitButtonEl = document.getElementById(exitButtonID);
+        const maxButtonEl = document.getElementById(maxButtonID);
+        const minButtonEl = document.getElementById(minButtonID);
 
         if (exitButtonEl) { 
             exitButtonEl.addEventListener("click", () => {
-                this.exitButtonClick(event, pane.objID);
+                this.exitButtonClick(event, _pane.objID);
             });
         }
         if (maxButtonEl) { 
             maxButtonEl.addEventListener("click", () => {
-                this.maxButtonClick(event, pane.objID);
+                this.maxButtonClick(event, _pane.objID);
             });
         }
         if (minButtonEl) { 
             minButtonEl.addEventListener("click", () => {
-                this.minButtonClick(event, pane.objID);
+                this.minButtonClick(event, _pane.objID);
             });
         }
 
@@ -2111,18 +2118,18 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @brief this function puts a string of text on the clipboard
      * @param {string} text the text to copy  
      **/
-    windowManager.prototype.copyTextToClipboard = function(text) {
+    windowManager.prototype.copyTextToClipboard = function(_text) {
         if (!navigator.clipboard) {
             //fall back
-            let textArea = document.createElement("textarea");
-            textArea.value = text;
+            const textArea = document.createElement("textarea");
+            textArea.value = _text;
             textArea.style.position = "fixed";  // To avoid scrolling to bottom
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
             try {
-                let successful = document.execCommand("copy");
-                let msg = successful ? "successful" : "unsuccessful";
+                const successful = document.execCommand("copy");
+                const msg = successful ? "successful" : "unsuccessful";
                 console.log("WindowManager: (NOTICE) Fallback copy was " + msg);
             } catch (err) {
                 console.error("WindowManager: (WARNING) Fallback copy Unable to copy text", err);
@@ -2130,7 +2137,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             document.body.removeChild(textArea);
             return;
         }
-        navigator.clipboard.writeText(text).then(function() {
+        navigator.clipboard.writeText(_text).then(function() {
             console.log("WindowManager: (NOTICE) Text copied to clipboard: " + text);
         }, function(err) {
             console.error("WindowManager: (WARNING) Unable to copy text to clipboard: " + err);
@@ -2141,22 +2148,22 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @brief This function makes the window tray button and adds it to the DOM
      * @param {object} the array indice for this window pane 
      */
-    windowManager.prototype.makeTrayButton = function(pane) {
+    windowManager.prototype.makeTrayButton = function(_pane) {
         //id
-        let trayID = "app" + this.appID + "-tray" + pane.windID;
-        let restoreButtonID = "app" + this.appID + "-tray-restore" + pane.windID;
-        let exitButtonID = "app" + this.appID + "-tray-exit" + pane.windID;
+        const trayID = "app" + this.appID + "-tray" + _pane.windID;
+        const restoreButtonID = "app" + this.appID + "-tray-restore" + _pane.windID;
+        const exitButtonID = "app" + this.appID + "-tray-exit" + _pane.windID;
 
         //restore button
-        let restoreButton = HTMLMAKER.makeString({
+        const restoreButton = HTMLMAKER.makeString({
             tag: 'button',
             id: restoreButtonID,
             style: 'float: left; overflow: hidden; white-space: nowrap; border: none; background: none; text-align: left',
-            innerHTML: pane.title
+            innerHTML: _pane.title
         });
 
         //exit button
-        let exitButton = HTMLMAKER.makeString({
+        const exitButton = HTMLMAKER.makeString({
             tag: 'button',
             id: exitButtonID,
             style: 'float: right; border: none; background: none; text-align: right',
@@ -2165,7 +2172,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
 
         //tray element
-        let tray = HTMLMAKER.makeElement(HTMLMAKER.makeString({
+        const tray = HTMLMAKER.makeElement(HTMLMAKER.makeString({
             tag: 'div',
             id: trayID,
             style: 'position: relative; float: left; padding: 1px; overflow: hidden;',
@@ -2178,14 +2185,14 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         //add to dom
         document.getElementById(this.taskbarIDs.trayContainerID).appendChild(tray);
-        let tempRect = tray.getBoundingClientRect();
+        const tempRect = tray.getBoundingClientRect();
         tray.style.minWidth = tempRect.width + "px";
         //attach event listeners
         document.getElementById(restoreButtonID).addEventListener("click", () => {
-            this.minButtonClick(event, pane.objID);
+            this.minButtonClick(event, _pane.objID);
         });
         document.getElementById(exitButtonID).addEventListener("click", () => {
-            this.exitButtonClick(event, pane.objID);
+            this.exitButtonClick(event, _pane.objID);
         });
 
         //return the ids
@@ -2202,10 +2209,10 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {Integer} the window object ID
      * 
      */
-    windowManager.prototype.maxButtonClick = function(event, objID) {
+    windowManager.prototype.maxButtonClick = function(_event, _objID) {
         //we are consuming the event
-        event.preventDefault();
-        this.system.maxWindow(objID);
+        _event.preventDefault();
+        this.system.maxWindow(_objID);
     }.bind(this);
         
     /**
@@ -2214,10 +2221,10 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {Integer} the window object ID
      * 
      */
-    windowManager.prototype.minButtonClick = function(event, objID) {
+    windowManager.prototype.minButtonClick = function(_event, _objID) {
         //we are consuming the event
-        event.preventDefault();
-        this.system.minWindow(objID);
+        _event.preventDefault();
+        this.system.minWindow(_objID);
     }.bind(this);
 
     /**
@@ -2226,10 +2233,10 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {Integer} the window object ID
      * 
      */
-    windowManager.prototype.exitButtonClick = function(event, objID) {
+    windowManager.prototype.exitButtonClick = function(_event, _objID) {
         //we are consuming the event
-        event.preventDefault();
-        this.system.closeWindow(objID);
+        _event.preventDefault();
+        this.system.closeWindow(_objID);
     }.bind(this);
         
     /**
@@ -2239,23 +2246,23 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      *
      */
     windowManager.prototype.closeWindow = function(_winObjID, _data) {
-        for (let [index, pane] of this.paneList.entries()) {
+        for (const [index, pane] of this.paneList.entries()) {
             // find matching unique objID
             if (pane.objID === _winObjID) {
                 //ids
-                let paneID = pane.elIDs.containerID;
-                let trayID = (pane.trayIDs) ? pane.trayIDs.trayID : "";
+                const paneID = pane.elIDs.containerID;
+                const trayID = (pane.trayIDs) ? pane.trayIDs.trayID : "";
 
                 //elements
-                let paneEl = document.getElementById(paneID);
-                let trayEl = document.getElementById(trayID);
+                const paneEl = document.getElementById(paneID);
+                const trayEl = document.getElementById(trayID);
 
                 //sanity, if it exist, hide it
                 if (paneEl) { jsWinUI.fadeOut(paneEl, 'fast'); }
                 if (trayEl) { jsWinUI.fadeOut(trayEl, 'fast'); }
 
                 if (pane.requireJS !== undefined) {                    
-                    for (let id of pane.loadedScripts) {
+                    for (const id of pane.loadedScripts) {
                         document.getElementById(id).remove();
                     }
                 }
@@ -2281,8 +2288,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                     setTimeout( this.removePaneElements(paneEl,trayEl),250);                        
                 }
                 // fix indexes
-                for (let [i, updatedPane] of this.paneList.entries()) {
-                    updatedPane.index = i;
+                for (const [index, updatedPane] of this.paneList.entries()) {
+                    updatedPane.index = index;
                 }
 
                 //open the next window
@@ -2314,14 +2321,14 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         for (let [index,pane] of this.paneList.entries()) { //find machting unique objID
             if(pane.objID === _winObjID ){
                 //ids
-                let paneID = pane.elIDs.containerID;
-                let titleID = pane.elIDs.titlebarID;
-                let contentID = pane.elIDs.contentID;
+                const paneID = pane.elIDs.containerID;
+                const titleID = pane.elIDs.titlebarID;
+                const contentID = pane.elIDs.contentID;
 
                 //elements
-                let objParent = document.getElementById(paneID); //entire window
-                let objTitle = document.getElementById(titleID);
-                let objChild = document.getElementById(contentID);
+                const objParent = document.getElementById(paneID); //entire window
+                const objTitle = document.getElementById(titleID);
+                const objChild = document.getElementById(contentID);
 
 
                 //sanity
@@ -2370,10 +2377,10 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                         this.executeCodeString(pane.onrestore, pane);
                     }
                 }
-                let max = this.getMaxZ(index);
+                const max = this.getMaxZ(index);
                 objParent.style.zIndex = max;
                 if (pane.menus !== undefined) {
-                    for (let menu of pane.menus){
+                    for (const menu of pane.menus){
                         menu.Refresh();
                     }
                 }
@@ -2388,12 +2395,14 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 	 *
 	 */
 	windowManager.prototype.minWindow = function(_winObjID) {
-		for (let [index, pane] of this.paneList.entries()) { //find machting unique objID
+		for (const [index, pane] of this.paneList.entries()) { //find machting unique objID
 			if(pane.objID === _winObjID ){ 
+                // get the window pane
+                const objParent = document.getElementById(pane.elIDs.containerID);
+                
 				if(pane.min === true) {
-					let objParent = document.getElementById(pane.elIDs.containerID); //entire window
                     //make sure new window on top
-                    max = this.getMaxZ(index);
+                    const max = this.getMaxZ(index);
                     objParent.style.zIndex = max;
                     //fade in
                     jsWinUI.fadeIn(objParent, "fast");
@@ -2404,9 +2413,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                         this.executeCodeString(pane.onrestore, pane);
                     }
 					break; //found it, added it back, stop loop
-				} else {
-					let objParent = document.getElementById(pane.elIDs.containerID); //entire window
-					//fade in
+				} else {					
+					//fade out
                     jsWinUI.fadeOut(objParent, "fast");
                     //is min
 					pane.min = true;
@@ -2417,7 +2425,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 				}
 				//refresh the menus
 				if (pane.hasMenu) {
-					for (let menu of pane.menus){
+					for (const menu of pane.menus){
 						menu.Refresh();
 					}
 				}
@@ -2434,7 +2442,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      */
     windowManager.prototype.executeCodeString = function(_codeString = "", _pane = undefined) {
         if (_codeString !=="") {
-            let script = HTMLMAKER.makeElement(HTMLMAKER.makeString({
+            const script = HTMLMAKER.makeElement(HTMLMAKER.makeString({
                 tag: 'script',
                 text: `
                      var dynamicFunction = function(system, pane) {
@@ -2460,21 +2468,23 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      *
      */
     windowManager.prototype.loadScript = function(_url, _callback = "", _pane = undefined) {
-        let scriptID = "app" + this.appID + "-sctipt" + Math.floor((Math.random() * 999) + 1);
-        let script = document.createElement("script");
+        //creat a script
+        const scriptID = "app" + this.appID + "-sctipt" + Math.floor((Math.random() * 999) + 1);
+        const script = document.createElement("script");
 
+        //set its attributes
         script.type = "text/javascript";
         script.src = _url;
         script.id = scriptID;
 
-        // Bind the window.onload to the script.onload
-        var onLoadCallback = function() {
+        // bind the window.onload to the script.onload
+        script.onload = function() {
             if (_callback !== "") {
                 this.executeCodeString(_callback, _pane);
             }
         };
-
-        script.onload = onLoadCallback;
+        
+        // add it to the dom
         document.head.appendChild(script);
 
         return scriptID;
@@ -2484,17 +2494,17 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @brief this function sets up basic click binding reactivity
      * @param {Element} _element - The HTML element to bind properties of chileren in.
      */
-    windowManager.prototype.setupClickBinding = function(_element, _pane = undefined, isStartMenu = false) {
+    windowManager.prototype.setupClickBinding = function(_element, _pane = undefined, _isStartMenu = false) {
         const targetElements = _element.querySelectorAll(`[jsw-click]`);
         if (targetElements) {
             // Call the separate function to bind the property for each matching element
             targetElements.forEach(targetElement => {
-                targetElement.addEventListener('click', () =>  {
+                targetElement.addEventListener('click', (event) =>  {
                     this.executeCodeString(targetElement.getAttribute('jsw-click'), _pane);
-                    if (isStartMenu) { 
-                        for (let pane of this.paneList) {
+                    if (_isStartMenu) { 
+                        for (const pane of this.paneList) {
                             if(pane.id === 1){
-                                this.closeStartMenuOnClick(pane.objID); 
+                                this.closeStartMenuOnClick(event, true); 
                             }
                         }
                     }
@@ -2621,7 +2631,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      */
     windowManager.prototype.isDescendant = function(_parent, _child) {
         //all descendants of _parent
-        let descendants = _parent.getElementsByTagName('*');
+        const descendants = _parent.getElementsByTagName('*');
 
         //look for _child
         for (let i = 0; i < descendants.length; i++) {
@@ -2643,9 +2653,9 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      *
      */
     windowManager.prototype.getMaxZ = function(_i = -1) {
-        let i = _i;
+        const i = _i;
         // Define the lowest z-index value
-        let lowestZIndex = 100;
+        const lowestZIndex = 100;
 
         // Initialize max to a value lower than lowestZIndex
         let max = lowestZIndex - 1;
@@ -2654,8 +2664,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         // Extract and sort z-indexes
         let zIndexes = [];
         for (let index in this.paneList) {
-            let pane = this.paneList[index];
-            let z = parseInt(document.getElementById(pane.elIDs.containerID).style.zIndex, 10);
+            const pane = this.paneList[index];
+            const z = parseInt(document.getElementById(pane.elIDs.containerID).style.zIndex, 10);
             if (!isNaN(z)) {
                 zIndexes.push(z);
             }
@@ -2664,29 +2674,29 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         // Reset z-indexes starting from lowestZIndex
         zIndexes.forEach((z, index) => {
-            let newZIndex = lowestZIndex + index;
-            let pane = this.paneList[index];
+            const newZIndex = lowestZIndex + index;
+            const pane = this.paneList[index];
             // Set the new z-index for the corresponding window
             document.getElementById(pane.elIDs.containerID).style.zIndex = newZIndex;
             this.paneList[index].zindex = newZIndex;
         });
 
         //find the top.
-        for (let index in this.paneList) {
-            let pane = this.paneList[index];
-            let z = parseInt(document.getElementById(pane.elIDs.containerID).style.zIndex, 10);
+        for (const index in this.paneList) {
+            const pane = this.paneList[index];
+            const z = parseInt(document.getElementById(pane.elIDs.containerID).style.zIndex, 10);
             if (!isNaN(z) && z > max) { 
                 max = z; topIndex = index; 				
             }
         }
 
         //did we gain focus?
-        let gainFocus = (topIndex !== i);
+        const gainFocus = (topIndex !== i);
 
         // Execute onFocus and loseFocus if applicable
         if (gainFocus) { 
-            for (let index in this.paneList) {
-                let pane = this.paneList[index];
+            for (const index in this.paneList) {
+                const pane = this.paneList[index];
                 if (index===i && pane.onFocus !== undefined && pane.onFocus !== "" && i !== -1) { this.executeCodeString(pane.onFocus, pane); }
                 else if (index!==i && pane.loseFocus !== undefined && pane.loseFocus !== "") { this.executeCodeString(pane.loseFocus, pane); }
             }
@@ -2702,16 +2712,16 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {object} the array indice for this window pane 
      */
     windowManager.prototype.startMenu = function(pane) {
-        let box = {};
+        const box = {};
 
-        let menuID = "mainmenu-" + this.appID;
+        const menuID = "mainmenu-" + this.appID;
 
         if (this.options.startMenuItems.length === 0) {
             console.log("Window Manager: (WARNING) no start menu items.");
             return -1;
         }
 
-        let buttons = this.options.startMenuItems.map(item => {
+        const buttons = this.options.startMenuItems.map(item => {
             return HTMLMAKER.makeString({
                 tag: 'td',
                 width: '50%',
@@ -2742,7 +2752,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             });
         }
 
-        let mainmenu = HTMLMAKER.makeString({
+        const mainmenu = HTMLMAKER.makeString({
             tag: 'div',
             id: menuID,
             class: "container-fluid center-container",
@@ -2753,7 +2763,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             })
         });
 
-        let title = HTMLMAKER.makeString({
+        const title = HTMLMAKER.makeString({
             tag: 'div',
             class: 'center-container',
             innerHTML: HTMLMAKER.makeString({
@@ -2785,8 +2795,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @return {Integer} objID the id of the overlay. 
      */
     windowManager.prototype.modalOverlay = function() {
-        let box = [];
-        let htmlString = "<div id='overlay' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 2000;'></div>";
+        const box = [];
+        const htmlString = "<div id='overlay' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 2000;'></div>";
 
         box.content = htmlString;        
         box.title = "Overlay";
@@ -2814,9 +2824,9 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @return {Integer} objID the id of the dialog box. 
      */
     windowManager.prototype.dialogBox = function(_msg, _modal = false) {
-        let box = [];
-        let message = "<br />" + _msg + "<br /><br />";
-        let htmlString = HTMLMAKER.makeString({
+        const box = [];
+        const message = "<br />" + _msg + "<br /><br />";
+        const htmlString = HTMLMAKER.makeString({
             'tag': 'div', 'innerHTML': HTMLMAKER.makeString({
                 'tag': 'div', 'class': 'center-container', 'innerHTML': message + HTMLMAKER.makeString({
                     'tag': 'button', 'jsw-click': 'system.closeWindow(pane.objID)', 'text': 'Continue'
@@ -2850,17 +2860,17 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @return {Integer} objID the id of the dialog box. 
      */
     windowManager.prototype.yesNoBox = function(_msg, _yesFN, _noFN = function(){}, _modal = false) {
-        let box = [];
-        let yesFN = _yesFN;
-        let noFN = _noFN;
-        let message = "<br />" + _msg + "<br /><br />";
+        const box = [];
+        const yesFN = _yesFN;
+        const noFN = _noFN;
+        const message = "<br />" + _msg + "<br /><br />";
 
         windowManager.yesNoBox.reply = function(response) {                    
             if(response === "yes") { yesFN(); }
             if(response === "no") { noFN(); }
         };
 
-        let htmlString = HTMLMAKER.makeString({
+        const htmlString = HTMLMAKER.makeString({
             'tag': 'div', 'innerHTML': HTMLMAKER.makeString({
                 'tag': 'div', 'class': 'center-container', 'innerHTML': message + HTMLMAKER.makeString({
                     'tag': 'button', 'jsw-click': "system.closeWindow(pane.objID); system.yesNoBox.reply('no');", 'text': 'Cancel'
@@ -2897,13 +2907,13 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @return {Integer} objID the id of the dialog box. 
      */
     windowManager.prototype.questionBox = function(_msg, _yesFN, _noFN = function(){}, _compare = undefined, _modal = false) {
-        let box = [];
-        let yesFN = _yesFN;
-        let noFN = _noFN;
-        let message = "<br />" + _msg + "<br />";
+        const box = [];
+        const yesFN = _yesFN;
+        const noFN = _noFN;
+        const message = "<br />" + _msg + "<br />";
 
         windowManager.questionBox.reply = function(objID) {
-            let value = $("#question-" + objID).val();
+            const value = $("#question-" + objID).val();
             if  (_compare===undefined) {
                 closeWindow(objID);
                 yesFN(value);
@@ -2920,7 +2930,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
         };
 
-        let htmlString = HTMLMAKER.makeString({
+        const htmlString = HTMLMAKER.makeString({
             'tag': 'div', 'innerHTML': HTMLMAKER.makeString({
                 'tag': 'div', 'class': 'center-container', 'innerHTML': message + '<br /><br />' +
                 HTMLMAKER.makeString({

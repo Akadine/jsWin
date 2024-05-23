@@ -19,22 +19,22 @@
     <body>
         <div id="app"></div>
         <script>
-            let options = {
+            const options = {
                 themePrefix: 'blue', 
                 taskbar: true,
                 data: {msg: 'Hello World'},
                 taskbarItems: ['custom','trays','custom','details'],
                 customTaskbarItems: [
-                    {name: 'Start', click: 'system.startMenu();' },
+                    {name: 'Demos', click: 'system.startMenu();' },
                     {name: 'myName', content: "<span jsw-bind='msg'></span>"}
                 ],
                 startMenuItems: [{name: "Say Hi", click: "system.dialogBox('Hello World')"}],
             };
             //wm = appID:
-            let wm = new jsWin('app', options, function(system){ //you can name system anything, but the windowManager is called system internally
+            const wm = new jsWin('app', options, function(system){ //you can name system anything, but the windowManager is called system internally
                 //set up the app here, check for login cookie, auto login, show start window, etc. you have access to all the options and system functions.
                 system.options.background = "images/defaultbk.jpg"; //testing reactivity, could have sent this in options initially.
-                let version = system.version(); //gets and logs the jsWin version
+                const version = system.version(); //gets and logs the jsWin version
                 //system.options.data.msg = "test";
             });
             

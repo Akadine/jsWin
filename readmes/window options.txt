@@ -134,10 +134,26 @@
 	- Description: Specifies a callback function to be executed when a multiple window is opened, works with oneInstance. Developers can define custom logic to be performed when a second window is opened.
 	- Default: undefined
 	
-34. "onFocus":
+35. "onFocus":
 	- Description: Specifies a callback function to be executed when the window gains focus.
 	- Default: undefined
 
-34. "loseFocus":
+36. "loseFocus":
 	- Description: Specifies a callback function to be executed when the window loses focus.
+	- Default: undefined
+
+37. "hasMenu":
+	- Description: Specifies if a window has has a dropdown menu.
+	- Default: false
+
+38. "menuOptions":
+	- Description: Array of menu option objects, you can have more than one. Use with hasMenu = true;  
+	- Default: undefined
+
+39. "hasNavWidget":
+	- Description: Specifies if a window has a forward/back navigation widget. You implement the script for the button clicks. 
+	- Default: false
+
+40. "navElements":
+	- Description: csv the ids of the fowrad and back button elements: "myBackButton,myNextButton".
 	- Default: undefined
