@@ -1,0 +1,13 @@
+{
+  "title": "Increment",
+  "content": "/apps/Increment/html/increment.html",
+  "id": 301,
+  "width": 200,
+  "height": 100,
+  "oneInstance": false,
+  "requireJS": [
+    "/apps/Increment/scripts/increment.js"
+  ],
+  "onLoad": "system.options.data[\"increment\" + pane.objID] = new INCREMENT(system, pane);", 
+  "onExit": "system.options.data[\"increment\" + pane.objID] = undefined; INCREMENT = undefined;" 
+}

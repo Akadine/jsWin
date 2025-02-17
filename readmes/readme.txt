@@ -1,6 +1,9 @@
 jsWin Library Crawford Computing Copyright 2024 by Jonathan Crawford                                                                                   
-This is a windowing library for websites.                                                                                                              
-                                                                                                                                                        
+This is a windowing library for websites.
+
+The power shell script starts a basic server so fetch requests work, in production use php or another solution.
+Use the shortcut for the script, Note: you will have to edit the folder names in the shorcut properties to point to this script for you setup.
+
 To create a Window Manager instance use:                                                                                                              
   let wm = new jsWin(elementID,options, function(system) { //code here, system.options.background = "", system.options.openWindow(data);  })          
 Where elementID is the ID of the div that will house the Window Manager, and options are the options. wm is now equal to the internal appID           

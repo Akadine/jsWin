@@ -1,0 +1,144 @@
+# Creating an App for jsWin
+
+## Folder Structure
+Your app should follow this structure within the `apps` folder:
+
+```
+/your-project/
+  index.html  <-- Main file that loads jsWin
+  /images/    <-- jsWin system images
+  /css/       <-- jsWin system CSS
+  /scripts/   <-- jsWin system scripts
+  /apps/
+    /appname/
+      window.json  <-- JSON describing the app window
+      /html/
+        index.html <-- HTML content for the main app window
+      /images/     <-- Any images needed by your app
+      /css/        <-- Any styles specific to your app
+      /scripts/    <-- Any JavaScript files for your app
+```
+
+## Creating `window.json`
+Each app must include a `window.json` file, which defines how the window is created and initialized. Below is an example configuration:
+
+```json
+{
+  "title": "My App",
+  "content": "/apps/myapp/html/index.html",
+  "width": 800,
+  "height": 600,
+  "oneInstance": true,
+  "requireJS": [
+    "/apps/myapp/scripts/scriptname.js",
+    "/apps/myapp/scripts/secondscriptname.js"
+  ],
+  "onLoad": "options.scriptname = new SCRIPTNAME.init(system, options);",
+  "onExit": "options.scriptname = undefined; SCRIPTNAME = undefined;"
+}
+```
+
+## Initializing and Cleaning Up an App
+Unlike the old system where apps would start automatically, **all app logic should now be inside `onLoad` and `onExit` functions**.
+
+### `onLoad` (App Initialization)
+The `onLoad` function is **called when the window is opened**. It receives two arguments:
+1. `system` – Provides access to internal jsWin functions (e.g., `dialogBox`).
+2. `options` – Acts as a shared state object for the app, similar to Angular’s `$scope`.
+
+Example:
+
+```js
+function appInit(system, options) {
+    options.counter = 0; // Example: Store app state in options
+    system.dialogBox("Welcome to My App!");
+}
+```
+
+### `onExit` (Cleanup Function)
+The `onExit` function is **called when the window is closed**. Use it to clean up any running processes or event listeners.
+
+Example from Profile Manager:
+
+```js
+function appCleanup(system, options) {
+    if (options.ProfileManager) {
+        options.ProfileManager = undefined;
+    }
+    if (typeof PROFILEMANAGER !== 'undefined') {
+        PROFILEMANAGER = undefined;
+    }
+}
+```
+
+## Adding Scripts
+All scripts for your app should go inside the `/apps/appname/scripts/` folder and be listed in `requireJS` inside `window.json`. The first script in the list **must contain the `onLoad` and `onExit` functions**.
+
+Example `main.js`:
+
+```js
+function appInit(system, options) {
+    options.message = "Hello, World!";
+    system.dialogBox("App Loaded!");
+}
+
+function appCleanup(system, options) {
+    console.log("App is closing, cleaning up...");
+}
+```
+
+## Ensuring App Instances Stay Separate
+Apps should function as **singletons within their own instance**, meaning multiple copies of the same app (e.g., Calculator) should not override each other. Each instance should:
+
+- Use **`options`** to store instance-specific data.
+- Define all **scripts as classes or prototypes** to prevent global overwrites.
+- The **first script listed in `requireJS`** should create a new instance and assign it to `options`.
+
+Example `calculator.js`:
+
+```js
+class Calculator {
+    constructor(system, options) {
+        this.system = system;
+        this.options = options;
+        this.value = 0;
+    }
+
+    add(number) {
+        this.value += number;
+    }
+
+    subtract(number) {
+        this.value -= number;
+    }
+}
+
+function appInit(system, options) {
+    options.calculator = new Calculator(system, options);
+}
+
+function appCleanup(system, options) {
+    options.calculator = undefined;
+}
+```
+
+This ensures that every **new window instance** has its own separate Calculator object and does not interfere with other instances.
+
+## Loading an App
+To open an app manually, use:
+```js
+myWindowManager.openWindow("/apps/appname/window.json");
+```
+
+## Summary
+✅ **Follow the structured folder layout**  
+✅ **Define your app in `window.json` OR `window.php` that returns JSON**  
+✅ **Use `onLoad` for initialization**  
+✅ **Use `onExit` for cleanup**  
+✅ **Store app state in `options`**  
+✅ **List required scripts in `requireJS`**  
+✅ **Ensure apps are instance-safe using classes or prototypes**  
+✅ **Load your app dynamically using `openWindow()`**  
+
+This ensures apps are modular, maintainable, and integrate smoothly with jsWin!
+

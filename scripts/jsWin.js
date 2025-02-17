@@ -3,20 +3,20 @@
 /* This is a windowing library for websites.                                                                                                              */
 /*                                                                                                                                                        */
 /*  To create a Window Manager instance use:                                                                                                              */
-/*    let wm = new jsWin(elementID,options, function(system) { //code here, system.options.background = "", system.options.openWindow(data);  })          */
+/*    let wm = new jsWin(elementID,options, function(system) { //code here, system.options.background = "", system.openWindow(data);  })                  */
 /*  Where elementID is the ID of the div that will house the Window Manager, and options are the options. wm is now equal to the internal appID           */
 /*                                                                                                                                                        */
-/*  The following are the default options:                                                                                                                */
+/*  The following are the default options, all are reactive.:                                                                                             */
 /*  defaultOptions = {                                                                                                                                    */
 /*    minHeight: 200,                                                                                                                                     */
 /*    minWidth: 200,                                                                                                                                      */
-/*    getDataFn: undefined,                                                                                                                               */
 /*    dataURL: "",                                                                                                                                        */
 /*    taskbar: false,                                                                                                                                     */
+/*    taskbarPostion: 'bottom', //or top, only these two positions supported                                                                              */
 /*    taskbarItems: ['start','trays','details','datetime'],                                                                                               */
 /*    customTaskbarItems: [],                                                                                                                             */
 /*    startMenuItems: [],                                                                                                                                 */
-/*    icons: [], //not implemented                                                                                                                        */
+/*    icons: [], //needs testing                                                                                                                          */
 /*    background: '',                                                                                                                                     */
 /*    themes: {'light': 'light', 'blue': 'blue'},                                                                                                         */
 /*    themePrefix: 'light',                                                                                                                               */
@@ -27,13 +27,11 @@
 /*  };                                                                                                                                                    */
 /*                                                                                                                                                        */
 /*  minHeight and minWidth: the smallest the windows can be resized                                                                                       */
-/*  getDataFn: send in your getData(url, callback) function, it should take the url and a function to call upon response.                                 */
-/*    With this the window data for apps can be stored server-side and loaded only when needed.                                                           */
-/*    You can also use this to have your apps work with data from your database.                                                                          */
 /*  dataURL: the data url to send to getDataFn. this can be "site.com/getdata.php&sentinel=" + sentinel, the library will add what is needed.             */
 /*    For example window[reqData] = "getSettings", this will add &mode=getSettings. check for mode in your php, and return the json data to use.          */
 /*    To access the data you can find it in pane.data from any window app. Learn more in the window creation readme.                                      */
 /*  taskbar: do you want to show a taskbar?                                                                                                               */
+/*  taskbarPosition: 'top' or 'bottom'                                                                                                                    */
 /*  taskbarItems: what you want and the order of the taskbar items, an array of strings.                                                                  */
 /*    valid items are:                                                                                                                                    */
 /*      "start": start menu button                                                                                                                        */
@@ -45,6 +43,7 @@
 /*  startMenuItems: [ {name: "", click:""} [,{}...] ] this populates the start menu                                                                       */
 /*  icons: an array of icon detail lists [{name:"",image:"",click:""[,position: {x:0,y:0}]}[,{}...] ].                                                    */
 /*    If no position is set, they will be positioned in order top-left to bottom-left then working to the right.                                          */
+/*  iconOptions: iconSize, fontSize, and bools grid,draggable    here you can set global icon settings. grid will snap them to a grid when dragged.       */
 /*  background: url to a background image                                                                                                                 */
 /*  themes: the included themes, you can send in any custom themes here. check jsWin.css for instructions on creating themes, and/or make a theme changer */
 /*  themePrefix: what theme to use                                                                                                                        */
@@ -1199,19 +1198,20 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
     const defaultOptions = {
         minHeight: 100,
         minWidth: 200,
-        getDataFn: undefined,
         dataURL: "",
         taskbar: false,
+		taskbarPosition: 'bottom',
         taskbarItems: ['start','trays','details','datetime'],
         customTaskbarItems: [],
         startMenuItems: [],
         icons: [],
+		iconOptions: [],
         background: '',
         themes: {'light': 'light', 'blue': 'blue'},
         themePrefix: 'light',
         borderRadius: '10',
         projectTitle: 'jsWin',
-        version: "0.0.7"
+        version: "0.0.8"
     };
 
     //default window data
@@ -1241,7 +1241,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         mustLogin: false, // Specifies whether the user must login to see the app they have bookmarked. You must implement this functionality, this is just a parameter for you to use.
         startMaximized: false, // Will start the window maximized.
         requireJS: undefined, // Specifies JavaScript file list required for the window. This option enables developers to include specific JavaScript files that are essential for the functionality or presentation of the window.
-        reqData: undefined, // Specifies whether the window needs data from the database. This option allows developers to define the type of data required for the window's content. This requies that a getDataFn by set.
+        reqData: undefined, // Specifies whether the window needs data from the database. This option allows developers to define the type of data required for the window's content.
         onLoad: undefined, // Specifies a callback function to be executed when the window is loaded. Developers can define custom logic to be performed when the window is opened.
         onExit: undefined, // Specifies a callback function to be executed when the window is closed or exited. Developers can define custom logic or cleanup tasks to be performed when the window is closed or exited.
         onMaximize: undefined, // Specifies a callback function to be executed when the window is maximized. Developers can define custom logic to be performed when the window is maximized.
@@ -1263,7 +1263,9 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         this.options = new Proxy(Object.assign({}, defaultOptions, _options), {
             set: (target, property, value) => {
                 // Update the property
-                target[property] = value;
+                oldValue = target[property];
+				target[property] = value;
+				
 
                 // change background image source
                 if (property === 'background') { this.updateBackground(); }
@@ -1271,11 +1273,14 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 // remove and rebuild taskbar
                 if (
                     property === 'taskbar' || 
+					property === 'taskbarPosition' ||
                     property === 'version' || 
                     property === 'projectTitle' ||
                     property === 'themePrefix' || 
                     property === "taskbarItems" ||
-                    property === "taskbarButtons" 
+                    property === "taskbarButtons" ||
+					property === "customTaskbarItems" ||
+					property === "startMenuItems"
                 ) {
                     this.removeTaskbar();
                     if (this.options.taskbar) { this.taskbarIDs = this.makeTaskbar(); }
@@ -1283,13 +1288,29 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 
                 // change the class tag for everything
                 if (property === 'themePrefix') {
-                    //todo: make a function to handle this
+                    const oldPrefix = oldValue;
+                    const newPrefix = value;
+                    if (oldPrefix !== newPrefix) {
+                        document.querySelectorAll(`[class*="${oldPrefix}-"]`).forEach(el => {
+                            el.classList.forEach(className => {
+                                if (className.startsWith(oldPrefix + "-")) {
+                                    const newClassName = newPrefix + className.substring(oldPrefix.length);
+                                    el.classList.replace(className, newClassName);
+                                }
+                            });
+                        });
+                    } 
                 }
                 
                 // change icon properties
                 if (property === "icons") {
-                    //todo: remove and readd icons using current settings
-                }
+					this.renderIcons();
+				}
+
+				// change iconOptions properties
+				if (property === "iconOptions") {
+					this.renderIcons();
+				}
 
                 // Indicate that the operation was successful
                 return true;
@@ -1328,9 +1349,6 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 console.log("Window Manager: (FATAL) Element with id: " + _elementID + "must be a valid DOM element.");
                 return null;
             }    
-            if (this.options.getDataFn === undefined) {
-                console.log("Window Manager: (WARNING) No getDataFn function set, window data can only be retrieved locally.");
-            }
 
             //stretch it out
             this.element.style.height = "100%";
@@ -1493,7 +1511,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 tag: item.click ? 'button' : 'div',
                 id: id,
                 style: item.click ? 'height: 44px; width: 60px;' : 'max-width: 120px; min-width: 60px; width: auto;',
-                class: item.click ? (options.themePrefix + "-start-menu") : "",
+                class: item.click ? (this.options.themePrefix + "-start-menu") : "",
                 innerHTML: item.content ? item.content : item.name
             });
             return {
@@ -1534,11 +1552,11 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         }).filter(item => item !== "").join(""); // Join all HTML strings into one string
 
 
-        //taskbar, the container and navbar classes are provided by bootstrap.css
+        //taskbar
         const taskbar = HTMLMAKER.makeElement(HTMLMAKER.makeString({
             tag: 'div',
             id: taskBarID,
-            class: (options.themePrefix + "-tray container-fluid navbar navbar-fixed-bottom"),
+            class: (this.options.themePrefix + "-tray navbar navbar-fixed-" + this.options.taskbarPosition),
             innerHTML: HTMLMAKER.makeString({
                 tag: 'table',
                 width: '100%',
@@ -1704,31 +1722,38 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             }
         }
     }.bind(this);
-
-    /**
-     * This function loads window from a url or takes data and sends the data to OpenWindow()
-     * @param {String\Object} _test the string url or thwe window data
-     *
-     * @return {Integer} id the window objID
-     *
-     */
-    windowManager.prototype.openWindow = function(_test){
-        //did we send in a url?
-        if (typeof _test === String) {
-            //is there a get data function?
-            if (this.options.getDataFn === undefined) {
-                console.log("Window Manager: (Warning) No get data function set, Cannot load window data from backend.");
-                return -1;
-            }
-            //get the window data
-            const callBack = function(data) {                    
-                return this.openWindow.showWindow(data);
-            };
-            options.getDataFn(_test, callBack);        
-        } else { 
-            return this.showWindow(_test); 
-        }
-    };
+	
+	/**
+	 * This function loads a window from a URL or takes data and sends the data to OpenWindow()
+	 * @param {String|Object} _test - The string URL or the window data
+	 *
+	 * @return {Integer} id - The window objID
+	 */
+	windowManager.prototype.openWindow = function (_test) {
+		// Did we send in a URL?
+		if (typeof _test === "string") {
+			const callBack = async (data) => {
+				if (typeof data.content === "string" && data.content.trim().toLowerCase().endsWith(".html")) {
+					try {
+						const htmlResponse = await fetch(data.content);
+						if (!htmlResponse.ok) {
+							this.dialogBox("File " + data.content + " is missing");
+							return;
+						}
+						data.content = await htmlResponse.text();
+					} catch (error) {
+						console.error("Error loading HTML content:", error);
+						this.dialogBox("Error loading content from: " + data.content);
+						return;
+					}
+				}
+				return this.showWindow(data);
+			};
+			this.getDataFn(_test, callBack);
+		} else {
+			return this.showWindow(_test);
+		}
+	}
 
     /**
      * @brief This function adds a window with page contents to array
@@ -1799,7 +1824,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             const callback = function(reqData) {
                 this.paneList[index].data = reqData;
             };
-            this.options.getDataFn(url, callback);
+            this.getDataFn(url, callback);
         }
 
         //if scripts needed load them first		
@@ -1999,10 +2024,10 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
             if(this.paneList[index].onLoad) {                                        
                 //make sure scripts are loaded in case onLoad function needs them
-                setTimeout(function() { 
-                    //execute onLoad
-                    this.executeCodeString(this.paneList[index].onLoad, this.paneList[index]); 
-                },10); 
+                setTimeout(() => { 
+					// Execute onLoad
+					this.executeCodeString(this.paneList[index].onLoad, this.paneList[index]); 
+				}, 10); 
             }
 
         }.bind(this);
@@ -2064,7 +2089,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             tag: 'div',
             id: contentID,
             class: this.options.themePrefix + "-pane-body",
-            innerHTML: _pane.content
+            innerHTML: this.compile(_pane.content, _pane)
         });
 
         const windowPane = HTMLMAKER.makeElement(HTMLMAKER.makeString({
@@ -2458,6 +2483,44 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             dynamicFunction = undefined;
         }
     };
+	
+	/**
+	 * @brief Compiles raw HTML by replacing template placeholders with evaluated values.
+	 * @param {Object} _pane The pane object associated with this instance.
+	 * @param {String} rawHtml The raw HTML string containing placeholders.
+	 *
+	 * @return {String} processedHtml The compiled HTML with evaluated values.
+	 */
+	windowManager.prototype.compile = function(_rawHtml, _pane = undefined){
+		const data = this.options.data;
+		// Function to process placeholders using executeCodeString
+		const replacePlaceholders = (match, expression) => {
+			try {
+				const propertyPath = expression.split('.');
+				// Traverse data object based on property path
+				let currentData = data;
+				for (const property of propertyPath) {
+					if (currentData.hasOwnProperty(property)) {
+						currentData = currentData[property];
+					} else if (_pane.hasOwnProperty(property)) {
+							currentData = _pane[property];
+					} else {
+						currentData = data;
+					}
+				}
+				return currentData;
+			} catch (e) {
+				console.error(`Error evaluating: ${expression}`, e);
+				return match; // Return original if evaluation fails
+			}
+		};
+
+		// Replace all instances of {{...}} with evaluated values
+		const processedHtml = _rawHtml.replace(/{{(.*?)}}/g, replacePlaceholders);
+
+		return processedHtml;
+	};
+
         
     /**
      * @brief This function loads a script. We don't want to inudate the users browser from the start.
@@ -2488,7 +2551,120 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         document.head.appendChild(script);
 
         return scriptID;
-    }  ; 
+    };
+	
+	/**
+     * @brief this function renders the icons
+     */
+	jsWin.prototype.renderIcons = function() {
+		const container = this.element; // The main window container
+		const icons = this.options.icons;
+		
+		// Remove existing icons
+		const existingIcons = container.querySelectorAll('.jsWin-icon');
+		existingIcons.forEach(icon => icon.remove());
+
+		// Get container dimensions for automatic placement
+		const { width, height } = container.getBoundingClientRect();
+		
+		// Default icon options
+		const iconOptions = Object.assign({
+			iconSize: 64,
+			fontSize: 12,
+			grid: false,
+			draggable: true,
+		}, this.options.iconOptions);
+		
+		const gridSize = iconOptions.iconSize + 20; // Grid cell size
+		const cols = Math.floor(width / gridSize);
+		let occupied = new Map();
+
+		function findNextAvailableSpot(col, row) {
+			while (occupied.has(`${col},${row}`)) {
+				col++;
+				if (col >= cols) {
+					col = 0;
+					row++;
+				}
+			}
+			occupied.set(`${col},${row}`, true);
+			return { x: col * gridSize, y: row * gridSize };
+		}
+
+		icons.forEach(iconData => {
+			// Create icon wrapper
+			const iconWrapper = document.createElement('div');
+			iconWrapper.style.position = 'absolute';
+			iconWrapper.style.cursor = 'pointer';
+			iconWrapper.style.textAlign = 'center';
+			
+			let x, y;
+			if (iconOptions.grid) {
+				let col = Math.floor((iconData.x || 0) / gridSize);
+				let row = Math.floor((iconData.y || 0) / gridSize);
+				({ x, y } = findNextAvailableSpot(col, row));
+			} else {
+				x = iconData.x !== undefined ? iconData.x : Math.random() * (width - gridSize);
+				y = iconData.y !== undefined ? iconData.y : Math.random() * (height - gridSize);
+			}
+
+			iconWrapper.style.left = `${x}px`;
+			iconWrapper.style.top = `${y}px`;
+			iconData.x = x;
+			iconData.y = y;
+
+			// Create image
+			const iconImage = document.createElement('img');
+			iconImage.src = iconData.image;
+			iconImage.style.width = `${iconOptions.iconSize}px`;
+			iconImage.style.height = `${iconOptions.iconSize}px`;
+			iconImage.style.display = 'block';
+			iconImage.style.margin = 'auto';
+			iconWrapper.appendChild(iconImage);
+
+			// Create title
+			const iconTitle = document.createElement('div');
+			iconTitle.textContent = iconData.title;
+			iconTitle.style.fontSize = `${iconOptions.fontSize}px`;
+			iconWrapper.appendChild(iconTitle);
+
+			// Click handler
+			if (iconData.click && typeof iconData.click === 'string') {
+				iconWrapper.addEventListener('click', () => {
+					try {
+						jsWin.prototype.executeCodeString(iconData.click);
+					} catch (error) {
+						console.error("Error executing icon click function:", error);
+					}
+				});
+			}
+
+			// Append to container
+			container.appendChild(iconWrapper);
+
+			// Make draggable with grid snapping
+			if(iconOptions.draggable) {
+				new jsWinUI.draggable({
+					element: iconWrapper,
+					stop: (event, options) => {
+						let newX = parseInt(options.element.style.left, 10);
+						let newY = parseInt(options.element.style.top, 10);
+
+						if (iconOptions.grid) {
+							let col = Math.round(newX / gridSize);
+							let row = Math.round(newY / gridSize);
+							({ x: newX, y: newY } = findNextAvailableSpot(col, row));
+						}
+
+						iconData.x = newX;
+						iconData.y = newY;
+						options.element.style.left = `${newX}px`;
+						options.element.style.top = `${newY}px`;
+					}
+				});
+			}
+		});
+	};
 
     /**
      * @brief this function sets up basic click binding reactivity
@@ -2536,14 +2712,11 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 } else {
                     // Property not found, exit loop
                     currentData = null;
-                    break;
+					break;
                 }
             }
-
-            // Bind property if found
-            if (currentData !== null) {
-                this.bindProperty(data, targetElement, propertyPath[propertyPath.length - 1]);
-            }
+			
+			this.bindProperty(data, targetElement, propertyPath[propertyPath.length - 1]);
         });
     };
         
@@ -2835,7 +3008,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         });
 
         box.content = htmlString;        
-        box.title = "Alert";
+        box.title = "Dialog";
         box.height = 130;
         box.width = 250;
         box.top = 100;
@@ -2959,6 +3132,29 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         box.id = 5;
         return this.openWindow(box);
     };
+	
+     /**
+     * @brief This function gets data, and then calls a callback function with the data.
+	 * @brief This will call the internal dialogBox with any error messages.	 
+     *
+     */
+	windowManager.prototype.getDataFn = async function (url, callback) {
+		try {
+			// Fetch JSON from either .php or .json file
+			const response = await fetch(url);
+			if (!response.ok) {
+				this.dialogBox("File " + url + " is missing");
+				return;
+			}
+			const data = await response.json();			
+
+			// Pass data to the callback
+			callback(data);
+		} catch (error) {
+			console.error("Error loading data:", error);
+			this.dialogBox("Error loading data form: " + url);
+		}
+	};
         
      /**
      * @brief This function gets the jsWin version.

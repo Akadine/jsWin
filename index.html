@@ -28,7 +28,7 @@
                     {name: 'Demos', click: 'system.startMenu();' },
                     {name: 'myName', content: "<span jsw-bind='msg'></span>"}
                 ],
-                startMenuItems: [{name: "Say Hi", click: "system.dialogBox('Hello World')"}],
+                startMenuItems: [{name: "Incrementer", click: "system.openWindow('/apps/Increment/increment.json')"}],
             };
             //wm = appID:
             const wm = new jsWin('app', options, function(system){ //you can name system anything, but the windowManager is called system internally
