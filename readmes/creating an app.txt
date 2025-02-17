@@ -11,134 +11,131 @@ Your app should follow this structure within the `apps` folder:
   /scripts/   <-- jsWin system scripts
   /apps/
     /appname/
-      window.json  <-- JSON describing the app window
+      appconfig.json  <-- JSON describing the app window
       /html/
-        index.html <-- HTML content for the main app window
+        appcontent.html <-- HTML content for the main app window
       /images/     <-- Any images needed by your app
       /css/        <-- Any styles specific to your app
       /scripts/    <-- Any JavaScript files for your app
 ```
 
-## Creating `window.json`
-Each app must include a `window.json` file, which defines how the window is created and initialized. Below is an example configuration:
+## Creating `appconfig.json`
+Each app must include a JSON file defining how the window is created and initialized. Below is an example configuration:
+Note: the content field could be a URL to an html file, as in the live example. The system will evaluate it to a string and put it back into the content field.
 
 ```json
 {
-  "title": "My App",
-  "content": "/apps/myapp/html/index.html",
-  "width": 800,
-  "height": 600,
-  "oneInstance": true,
+  "title": "Increment",
+  "content": "<div id='incrementapp{{pane.objID}}'>\n  <span id='numberbox{{pane.objID}}' jsw-bind='number{{pane.objID}}'></span><br /><button jsw-click='system.options.data.increment{{pane.objID}}.increment();'>Click to Increment</button></div>",
+  "id": 301,
+  "width": 200,
+  "height": 100,
+  "oneInstance": false,
   "requireJS": [
-    "/apps/myapp/scripts/scriptname.js",
-    "/apps/myapp/scripts/secondscriptname.js"
+    "/apps/increment/scripts/increment.js",
+    "/apps/increment/scripts/anotherScript.js"
   ],
-  "onLoad": "options.scriptname = new SCRIPTNAME.init(system, options);",
+  "onLoad": "system.options.data[\"increment\" + pane.objID] = new INCREMENT(system, pane);", 
   "onExit": "options.scriptname = undefined; SCRIPTNAME = undefined;"
 }
 ```
 
+## Understanding the `pane` Object and `objID`
+Each app window is represented by a `pane` object, which contains all details about the app instance, including:
+- The **defaults** set in the JSON file
+- A unique **`objID`** assigned when the window is created
+
+The `objID` ensures that each window instance is **independent** from others. This means multiple instances of the same app can run simultaneously without interfering with each other. 
+
+## The `system` Object
+The `system` object is passed into each app and provides:
+- **System functions** (e.g., open dialogs, manage child windows)
+- **`system.options`** – Contains jsWin configuration, allowing changes like theme and background updates
+- **`system.options.data`** – Stores all app-related data, including script objects for tracking instances
+
 ## Initializing and Cleaning Up an App
-Unlike the old system where apps would start automatically, **all app logic should now be inside `onLoad` and `onExit` functions**.
+Unlike older versions where apps started automatically, **all app logic should be inside `onLoad` and `onExit` functions**.
 
 ### `onLoad` (App Initialization)
-The `onLoad` function is **called when the window is opened**. It receives two arguments:
-1. `system` – Provides access to internal jsWin functions (e.g., `dialogBox`).
-2. `options` – Acts as a shared state object for the app, similar to Angular’s `$scope`.
+The `onLoad` function is **called when the window is opened** and creates a new instance of the app, using `objID` to keep it separate.
 
-Example:
+Example (Incrementer App):
 
 ```js
-function appInit(system, options) {
-    options.counter = 0; // Example: Store app state in options
-    system.dialogBox("Welcome to My App!");
+class INCREMENT {
+    constructor(system, pane){
+        this.system = system;
+        this.pane = pane;
+        this._number = 0;
+        this.system.options.data["number" + this.pane.objID] = this._number;
+    }
+
+    increment() {
+        this._number++;
+        this.system.options.data["number" + this.pane.objID] = this._number;
+    }
+
+    get number() {
+        return this._number;
+    }
 }
 ```
+
+This ensures each window gets **its own counter** tracked separately in `system.options.data`.
 
 ### `onExit` (Cleanup Function)
-The `onExit` function is **called when the window is closed**. Use it to clean up any running processes or event listeners.
-
-Example from Profile Manager:
+The `onExit` function removes the app instance when the window is closed:
 
 ```js
-function appCleanup(system, options) {
-    if (options.ProfileManager) {
-        options.ProfileManager = undefined;
-    }
-    if (typeof PROFILEMANAGER !== 'undefined') {
-        PROFILEMANAGER = undefined;
-    }
-}
+"onExit": "delete system.options.data[\"increment\" + pane.objID];"
 ```
 
-## Adding Scripts
-All scripts for your app should go inside the `/apps/appname/scripts/` folder and be listed in `requireJS` inside `window.json`. The first script in the list **must contain the `onLoad` and `onExit` functions**.
+This prevents lingering references and ensures clean memory management.
 
-Example `main.js`:
+## Managing Multiple Scripts
+The `requireJS` field in the JSON is an array, meaning you can load multiple scripts separated by commas. It is good practice to initialize just an **app manager** here, keeping the data object uncluttered. The app manager can then initialize other components as local members.
 
+Example:
 ```js
-function appInit(system, options) {
-    options.message = "Hello, World!";
-    system.dialogBox("App Loaded!");
+class IncrementManager {
+    constructor(system, pane) {
+        this.incrementApp = new INCREMENT(system, pane);
+    }
 }
 
-function appCleanup(system, options) {
-    console.log("App is closing, cleaning up...");
-}
+"onLoad": "system.options.data[\"increment\" + pane.objID] = new IncrementManager(system, pane);"
 ```
 
-## Ensuring App Instances Stay Separate
-Apps should function as **singletons within their own instance**, meaning multiple copies of the same app (e.g., Calculator) should not override each other. Each instance should:
+This ensures all related functionality is encapsulated within the app manager.
 
-- Use **`options`** to store instance-specific data.
-- Define all **scripts as classes or prototypes** to prevent global overwrites.
-- The **first script listed in `requireJS`** should create a new instance and assign it to `options`.
+## Including HTML Directly in `content`
+Instead of referencing an external file, you can **embed HTML directly in the `content` field** of the JSON. This can be useful for small apps or dynamically built apps that only need a starting div. However, for complex apps, using an external HTML file is recommended as it is easier to edit and manage.
 
-Example `calculator.js`:
-
-```js
-class Calculator {
-    constructor(system, options) {
-        this.system = system;
-        this.options = options;
-        this.value = 0;
-    }
-
-    add(number) {
-        this.value += number;
-    }
-
-    subtract(number) {
-        this.value -= number;
-    }
-}
-
-function appInit(system, options) {
-    options.calculator = new Calculator(system, options);
-}
-
-function appCleanup(system, options) {
-    options.calculator = undefined;
-}
-```
-
-This ensures that every **new window instance** has its own separate Calculator object and does not interfere with other instances.
+## Loading Scripts in HTML
+While scripts **can** be loaded directly in the HTML content, it is important to note that they may not execute properly in all cases. Any required **CSS must also be included** directly in the HTML when not referenced separately.
 
 ## Loading an App
 To open an app manually, use:
 ```js
-myWindowManager.openWindow("/apps/appname/window.json");
+system.openWindow("/apps/increment/incrementer.json");
+```
+
+Alternatively, on a PHP server:
+```js
+system.openWindow("/apps/chess/chess.php");
 ```
 
 ## Summary
 ✅ **Follow the structured folder layout**  
-✅ **Define your app in `window.json` OR `window.php` that returns JSON**  
+✅ **Define your app in a JSON or PHP configuration file**  
+✅ **Use `objID` to keep instances separate**  
 ✅ **Use `onLoad` for initialization**  
 ✅ **Use `onExit` for cleanup**  
-✅ **Store app state in `options`**  
+✅ **Store app state in `system.options.data`**  
 ✅ **List required scripts in `requireJS`**  
-✅ **Ensure apps are instance-safe using classes or prototypes**  
-✅ **Load your app dynamically using `openWindow()`**  
+✅ **Use an app manager to keep scripts organized**  
+✅ **Load apps dynamically with `system.openWindow()`**  
+✅ **Choose between external HTML or inline `content` for flexibility**  
 
-This ensures apps are modular, maintainable, and integrate smoothly with jsWin!
+This approach ensures apps are modular, maintainable, and integrate seamlessly with jsWin!
 
