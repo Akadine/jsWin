@@ -22,7 +22,7 @@
 /*    themePrefix: 'light',                                                                                                                               */
 /*    borderRadius: '10',                                                                                                                                 */
 /*    projectTitle: 'jsWin',                                                                                                                              */
-/*    version: "0.0.1",                                                                                                                                   */
+/*    version: "0.0.9",                                                                                                                                   */
 /*    data: {};                                                                                                                                           */
 /*  };                                                                                                                                                    */
 /*                                                                                                                                                        */
@@ -1211,7 +1211,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
         themePrefix: 'light',
         borderRadius: '10',
         projectTitle: 'jsWin',
-        version: "0.0.8"
+        version: "0.0.9"
     };
 
     //default window data
@@ -2723,6 +2723,8 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             }
 			
 			this.bindProperty(data, targetElement, propertyPath[propertyPath.length - 1]);
+			//Reset
+			data = this.options.data;
         });
     };
         
