@@ -9,5 +9,5 @@
     "/apps/Increment/scripts/increment.js"
   ],
   "onInit": "system.options.data[\"increment\" + pane.objID] = new INCREMENT(system, pane);", 
-  "onExit": "system.options.data[\"increment\" + pane.objID] = undefined; INCREMENT = undefined;" 
+  "onExit": "system.options.data[\"increment\" + pane.objID] = undefined;" 
 }
