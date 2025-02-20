@@ -8,6 +8,6 @@
   "requireJS": [
     "/apps/Increment/scripts/increment.js"
   ],
-  "onLoad": "system.options.data[\"increment\" + pane.objID] = new INCREMENT(system, pane);", 
+  "onInit": "system.options.data[\"increment\" + pane.objID] = new INCREMENT(system, pane);", 
   "onExit": "system.options.data[\"increment\" + pane.objID] = undefined; INCREMENT = undefined;" 
 }

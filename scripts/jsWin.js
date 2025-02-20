@@ -1836,9 +1836,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                 this.paneList[index].loadedScripts.push(scriptID);
             }//let that load, we'll come back to it					
         }
-
-        this.paneList[index].elIDs = this.makeWindow(this.paneList[index]);
-
+		
         //we needed a pause to let AngularJS build the ng-for, we probally don't need this anymore
         callBack = function(windID) {
             let index = -1;
@@ -1848,8 +1846,14 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
                     break;
                 }
             }
+			
+			if(this.paneList[index].onInit) {                                        
+				this.executeCodeString(this.paneList[index].onInit, this.paneList[index]); 
+			}
 
-            const objParent = document.getElementById(this.paneList[index].elIDs.containerID); //entire window
+			this.paneList[index].elIDs = this.makeWindow(this.paneList[index]);
+			
+			const objParent = document.getElementById(this.paneList[index].elIDs.containerID); //entire window
             //titlebar 
             const objTitle = document.getElementById(this.paneList[index].elIDs.titlebarID);
             //contentpane 
@@ -2694,7 +2698,7 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
      * @param {Element} _element - The HTML element to bind properties of chileren in.
      */
     windowManager.prototype.setupDataBinding = function(_element) {
-        const data = this.options.data;
+        let data = this.options.data;
 
         // Find all elements with jsw-bind attribute
         const elementsWithBinding = _element.querySelectorAll('[jsw-bind]');
@@ -2706,8 +2710,10 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
 
             // Traverse data object based on property path
             let currentData = data;
+			
             for (const property of propertyPath) {
                 if (currentData.hasOwnProperty(property)) {
+					data = currentData;
                     currentData = currentData[property];
                 } else {
                     // Property not found, exit loop
