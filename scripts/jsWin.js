@@ -1136,7 +1136,7 @@ const HTMLMAKER = (function () {
             // Copy attributes
             for (let i = 0; i < _node.attributes.length; i++) {
                 const attr = _node.attributes[i];
-                element.setAttribute(attr.nodeName, attr.nodeValue);
+                element.setAttributeNS(null, attr.nodeName, attr.nodeValue);
             }
             // Recursively process child nodes
             for (let i = 0; i < _node.childNodes.length; i++) {
@@ -2093,30 +2093,41 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             tag: 'div',
             id: contentID,
             class: this.options.themePrefix + "-pane-body",
+			"jsw-click": `const max = system.getMaxZ(); pane.zindex = max; document.getElementById(pane.elIDs.containerID).style.zIndex = max;`,
             innerHTML: this.compile(_pane.content, _pane)
         });
 
-        const windowPane = HTMLMAKER.makeElement(HTMLMAKER.makeString({
+        const windowPane = HTMLMAKER.makeString({
             tag: 'div',
             id: containerID,
             style: 'display: none;',
             class: this.options.themePrefix + "-window",
             innerHTML: ( (_pane.showTitlebar)?titlebar:"") + body
-        }));
+        });
 
-        this.element.appendChild(windowPane);
+        this.element.appendChild(HTMLMAKER.makeElement(windowPane));
 
         //set up data binding
-        this.setupDataBinding(document.getElementById(contentID));
+        this.setupDataBinding(document.getElementById(containerID));
 
         //set up click binding
-        this.setupClickBinding(document.getElementById(contentID), _pane, (_pane.id === 1) );
+        this.setupClickBinding(document.getElementById(containerID), _pane, (_pane.id === 1) );
 
-        //attach click handlers, get elements first for sanity            
+        //attach click handlers, get elements first for sanity
+		const windowPaneEl = document.getElementById(containerID)		
         const exitButtonEl = document.getElementById(exitButtonID);
         const maxButtonEl = document.getElementById(maxButtonID);
         const minButtonEl = document.getElementById(minButtonID);
 
+		if (windowPaneEl) { 
+            windowPaneEl.addEventListener("click", () => {
+                const max = this.getMaxZ(); 
+				_pane.zindex = max; 
+				const el = document.getElementById(_pane.elIDs.containerID);
+				if(el){el.style.zIndex = max;}
+            });
+        }
+		
         if (exitButtonEl) { 
             exitButtonEl.addEventListener("click", () => {
                 this.exitButtonClick(event, _pane.objID);
