@@ -2093,7 +2093,6 @@ function jsWin(_elementID = "", _options = {}, _startFN = function(){}) {
             tag: 'div',
             id: contentID,
             class: this.options.themePrefix + "-pane-body",
-			"jsw-click": `const max = system.getMaxZ(); pane.zindex = max; document.getElementById(pane.elIDs.containerID).style.zIndex = max;`,
             innerHTML: this.compile(_pane.content, _pane)
         });
 
